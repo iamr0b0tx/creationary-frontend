@@ -154,8 +154,8 @@ const InstagramLogo = () => (
         r="3263.54"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset=".09" stop-color="#fa8f21" />
-        <stop offset=".78" stop-color="#d82d7e" />
+        <stop offset=".09" stopColor="#fa8f21" />
+        <stop offset=".78" stopColor="#d82d7e" />
       </radialGradient>
       <radialGradient
         id="1"
@@ -164,8 +164,8 @@ const InstagramLogo = () => (
         r="2572.12"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset=".64" stop-color="#8c3aaa" stop-opacity="0" />
-        <stop offset="1" stop-color="#8c3aaa" />
+        <stop offset=".64" stopColor="#8c3aaa" stopOpacity="0" />
+        <stop offset="1" stopColor="#8c3aaa" />
       </radialGradient>
     </defs>
     <path
