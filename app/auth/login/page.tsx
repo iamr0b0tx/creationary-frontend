@@ -1,11 +1,13 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 // import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { handleEmailLogin } from "@/app/action/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { OctagonAlert } from "lucide-react";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,9 +17,45 @@ export default function LoginPage() {
     handleEmailLogin,
     undefined
   );
+  const [clearErrors, setClearErrors] = useState(false);
+
+  useEffect(() => {
+    setClearErrors(false);
+    setTimeout(() => {
+      if (loginState?.errors) {
+        setClearErrors(true);
+      }
+    }, 10000);
+  }, [loginState?.errors]);
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {loginState?.errors && !clearErrors && (
+        <Alert
+          variant="destructive"
+          className="bg-red-100 border-red-500 text-red-500"
+        >
+          <OctagonAlert color="#ef4444" className="h-5 text-red-500 w-5" />
+          <AlertDescription>
+            {typeof loginState.errors === "string" ? (
+              <div className="text-sm">{loginState.errors}</div>
+            ) : (
+              Object.entries(loginState.errors).map(([key, value]) => (
+                <div key={key} className="text-sm">
+                  <strong>{key}:</strong>
+                  <ul className="">
+                    {String(value.errors)
+                      .split(",")
+                      .map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                  </ul>
+                </div>
+              ))
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
       <Image
         alt="Background"
         src="/bg-img.png"
@@ -42,7 +80,7 @@ export default function LoginPage() {
                 className="bg-gray-100 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
               />
             </div>
             <div>
@@ -52,7 +90,7 @@ export default function LoginPage() {
                 className="bg-gray-100 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value.trim())}
               />
             </div>
           </div>
@@ -79,7 +117,6 @@ export default function LoginPage() {
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
-                type="button"
                 // onClick={() => handleProviderLogin("google")}
                 formAction={() => {}}
                 className="w-full inline-flex justify-center py-2 px-4 border border-blue-200 rounded-md shadow-sm bg-blue-50 text-sm font-medium text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors"
@@ -114,7 +151,6 @@ export default function LoginPage() {
               </button>
 
               <button
-                type="button"
                 formAction={() => {}}
                 className="w-full inline-flex justify-center py-2 px-4 rounded-md shadow-sm bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-medium text-white hover:from-purple-600 hover:to-pink-600"
               >
