@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const signUpFormSchema = z.object({
-  firstName: z.string().min(3, "First name is required"),
-  lastName: z.string().min(3, "Last name is required"),
+  firstName: z.string().min(3, "First name is required").trim(),
+  lastName: z.string().min(3, "Last name is required").trim(),
   email: z.email("Invalid email address").trim(),
   password: z
     .string()
@@ -15,7 +15,7 @@ export const signUpFormSchema = z.object({
 });
 
 export const loginFormSchema = z.object({
-  email: z.email("Invalid email address").min(1, "Email is required"),
+  email: z.email("Invalid email address").min(1, "Email is required").trim(),
   password: z
     .string()
     .min(8, { message: "Be at least 8 characters long" })
@@ -23,5 +23,5 @@ export const loginFormSchema = z.object({
     .regex(/[0-9]/, { message: "Contain at least one number." })
     .regex(/[^a-zA-Z0-9]/, {
       message: "Contain at least one special character.",
-    }),
+    }).trim(),
 });
