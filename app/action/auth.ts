@@ -4,6 +4,7 @@ import z from "zod";
 import { loginFormSchema, signUpFormSchema } from "@/lib/definitions";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { logger } from "@/lib/logger";
 
 export async function handleEmailLogin(prev: unknown, formData: FormData) {
   const email = formData.get("email");
@@ -17,7 +18,7 @@ export async function handleEmailLogin(prev: unknown, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.error("Validation errors:", validatedFields.error.flatten());
+    logger.error("Validation errors:", validatedFields.error.flatten());
     return { errors: z.treeifyError(validatedFields.error).properties };
   }
 
@@ -41,7 +42,7 @@ export async function handleEmailLogin(prev: unknown, formData: FormData) {
       path: "/",
     });
   } catch (error) {
-    console.error("Error during login:", error);
+    logger.error("Error during login:", error);
   }
   redirect("/dashboard");
 }
@@ -58,7 +59,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.error("Validation errors:", validatedFields.error.flatten());
+    logger.error("Validation errors:", validatedFields.error.flatten());
     return { errors: z.treeifyError(validatedFields.error).properties };
   }
 
@@ -82,7 +83,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
       path: "/",
     });
   } catch (error) {
-    console.error("Error during login:", error);
+    logger.error("Error during login:", error);
   }
   redirect("/dashboard");
 }
