@@ -14,8 +14,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Heart, Eye, Lock, Play, Star } from "lucide-react";
 import Link from "next/link";
+import { logger } from "@/lib/logger";
 
-const categories = [
+type TCategory =
+  | "Photography"
+  | "Music"
+  | "Fitness"
+  | "Cooking"
+  | "Art"
+  | "Business"
+  | "Technology"
+  | "All";
+
+const categories: TCategory[] = [
   "All",
   "Photography",
   "Music",
@@ -25,6 +36,7 @@ const categories = [
   "Technology",
   "Business",
 ];
+
 
 const contentData = [
   {
@@ -163,13 +175,13 @@ const contentData = [
 
 export default function ExplorePage() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
-    console.log(`Simulated API call: GET /api/content/search?q=${query}`);
+    logger.log(`Simulated API call: GET /api/content/search?q=${query}`);
     // Backend will handle content search
   };
 
@@ -339,7 +351,6 @@ export default function ExplorePage() {
                 </div> */}
               </div>
               {/* Content Image End */}
-               
 
               <CardHeader className="pb-3 h-full">
                 <div className="flex items-center justify-between mb-2">
