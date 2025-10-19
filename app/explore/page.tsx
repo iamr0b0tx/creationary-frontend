@@ -186,7 +186,7 @@ export default function ExplorePage() {
   };
 
   const handleLikeContent = async (contentId: number) => {
-    console.log(`Simulated API call: POST /api/content/${contentId}/like`);
+    logger.log(`Simulated API call: POST /api/content/${contentId}/like`);
     // Backend will handle like functionality
   };
 
