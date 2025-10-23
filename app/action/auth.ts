@@ -4,7 +4,7 @@ import z from "zod";
 import { loginFormSchema, signUpFormSchema } from "@/lib/definitions";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { logger } from "@/lib/logger";
+import logger from "@/lib/serverLogger";
 
 export async function handleEmailLogin(prev: unknown, formData: FormData) {
   const email = formData.get("email");

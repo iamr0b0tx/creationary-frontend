@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Heart, Eye, Lock, Play, Star } from "lucide-react";
 import Link from "next/link";
-import { logger } from "@/lib/logger";
+import { logger } from "@/lib/clientLogger";
 
 type TCategory =
   | "Photography"
@@ -36,7 +36,6 @@ const categories: TCategory[] = [
   "Technology",
   "Business",
 ];
-
 
 const contentData = [
   {
@@ -181,12 +180,12 @@ export default function ExplorePage() {
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
-    logger.log(`Simulated API call: GET /api/content/search?q=${query}`);
+    logger.info(`Simulated API call: GET /api/content/search?q=${query}`);
     // Backend will handle content search
   };
 
   const handleLikeContent = async (contentId: number) => {
-    logger.log(`Simulated API call: POST /api/content/${contentId}/like`);
+    logger.info(`Simulated API call: POST /api/content/${contentId}/like`);
     // Backend will handle like functionality
   };
 
