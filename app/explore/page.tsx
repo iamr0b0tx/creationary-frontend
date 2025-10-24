@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
 import { categories, contentData, TCategory } from "@/lib/data/exploreContent";
 import { PaginationWrapper } from "@/components/wrappers/paginationWrapper";
+import posthog from "posthog-js";
 
 const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
@@ -27,6 +28,10 @@ export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+
+  useEffect(() => {
+    posthog.capture("my event", { property: "value" });
+  }, []);
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
@@ -150,6 +155,9 @@ export default function ExplorePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedContent.map((content, index) => (
             <Card
+              onClick={() => {
+                handlePurchaseContent(content.id);
+              }}
               key={content.id + "" + index}
               className="overflow-hidden pt-0 pb-0 hover:shadow-lg transition-all duration-300 animate-fade-in-up group cursor-pointer"
               style={{ animationDelay: `${index * 0.1}s` }}
@@ -240,6 +248,7 @@ export default function ExplorePage() {
                       </AvatarFallback>
                     </Avatar>
                     <Link
+                      onClick={(e) => e.stopPropagation()}
                       href={`/user/${content.creator.username}`}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
