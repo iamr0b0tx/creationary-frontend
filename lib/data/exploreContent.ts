@@ -19,7 +19,30 @@ const categories: TCategory[] = [
   "Business",
 ];
 
-const contentData = [
+export type TContentItem = {
+  id: number;
+  title: string;
+  creator: {
+    name: string;
+    username: string;
+    avatar: string;
+    verified: boolean;
+  };
+  thumbnail: string;
+  category: TCategory;
+  price: number;
+  originalPrice: number | null;
+  isPremium: boolean;
+  rating: number;
+  reviews: number;
+  views: number;
+  likes: number;
+  duration: string;
+  description: string;
+  features: string[];
+};
+
+const contentData: TContentItem[] = [
   {
     id: 1,
     title: "Professional Portrait Photography Masterclass",
@@ -41,6 +64,13 @@ const contentData = [
     duration: "3h 45m",
     description:
       "Learn advanced portrait lighting techniques and posing strategies used by professional photographers.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
   {
     id: 2,
@@ -63,6 +93,13 @@ const contentData = [
     duration: "2h 30m",
     description:
       "Master the basics of beat making with step-by-step tutorials and real-world examples.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
   {
     id: 3,
@@ -85,6 +122,13 @@ const contentData = [
     duration: "30 days",
     description:
       "Transform your fitness with daily workout routines that require no equipment.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
   {
     id: 4,
@@ -107,6 +151,13 @@ const contentData = [
     duration: "4h 15m",
     description:
       "Learn authentic Italian recipes and cooking techniques from a traditional chef.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
   {
     id: 5,
@@ -129,6 +180,13 @@ const contentData = [
     duration: "1h 50m",
     description:
       "Start your digital art journey with fundamental techniques and software basics.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
   {
     id: 6,
@@ -151,7 +209,18 @@ const contentData = [
     duration: "5h 30m",
     description:
       "Build a successful startup with proven strategies and real case studies.",
+    features: [
+      "3+ hours of video content",
+      "Downloadable resources",
+      "Certificate of completion",
+      "Lifetime access",
+      "30-day money back guarantee",
+    ],
   },
 ];
 
-export { categories, contentData };
+const getProductById = (id: string) => {
+  return contentData.find((item) => item.id === parseInt(id, 10)) || null;
+};
+
+export { categories, contentData, getProductById };
