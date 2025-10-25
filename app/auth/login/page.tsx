@@ -1,6 +1,5 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
-// import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -8,15 +7,11 @@ import { handleEmailLogin } from "@/app/action/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OctagonAlert } from "lucide-react";
 
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [loginState, loginAction, loginPending] = useActionState(
-    handleEmailLogin,
-    undefined
-  );
+  const [loginState, loginAction, loginPending] = useActionState(handleEmailLogin, undefined);
   const [clearErrors, setClearErrors] = useState(false);
 
   useEffect(() => {
@@ -29,13 +24,10 @@ export default function LoginPage() {
   }, [loginState?.errors]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       {loginState?.errors && !clearErrors && (
-        <Alert
-          variant="destructive"
-          className="bg-red-100 border-red-500 text-red-500"
-        >
-          <OctagonAlert color="#ef4444" className="h-5 text-red-500 w-5" />
+        <Alert variant="destructive" className="border-red-500 bg-red-100 text-red-500">
+          <OctagonAlert color="#ef4444" className="h-5 w-5 text-red-500" />
           <AlertDescription>
             {typeof loginState.errors === "string" ? (
               <div className="text-sm">{loginState.errors}</div>
@@ -56,28 +48,23 @@ export default function LoginPage() {
           </AlertDescription>
         </Alert>
       )}
-      <Image
-        alt="Background"
-        src="/bg-img.png"
-        fill
-        className="object-cover h-screen -z-10"
-      />
-      <div className="absolute inset-0 bg-black opacity-50 -z-[5]"></div>
+      <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
+      <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
 
-      <div className="max-w-md backdrop-blur-md px-4 w-full space-y-8 rounded-xl py-3 ">
+      <div className="w-full max-w-md space-y-8 rounded-xl px-4 py-3 backdrop-blur-md">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white ">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
             Sign in to your account
           </h2>
         </div>
 
         <form action={loginAction} className="mt-8 space-y-6">
-          <div className="rounded-md  space-y-4">
+          <div className="space-y-4 rounded-md">
             <div>
               <Input
                 type="email"
                 required
-                className="bg-gray-100 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
@@ -87,7 +74,7 @@ export default function LoginPage() {
               <Input
                 type="password"
                 required
-                className="bg-gray-100 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value.trim())}
@@ -99,7 +86,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loginPending}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
             >
               {loginPending ? "Signing in..." : "Sign in"}
             </button>
@@ -111,7 +98,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or</span>
+                <span className="bg-gray-50 px-2 text-gray-500">Or</span>
               </div>
             </div>
 
@@ -119,7 +106,7 @@ export default function LoginPage() {
               <button
                 // onClick={() => handleProviderLogin("google")}
                 formAction={() => {}}
-                className="w-full inline-flex justify-center py-2 px-4 border border-blue-200 rounded-md shadow-sm bg-blue-50 text-sm font-medium text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors"
+                className="inline-flex w-full justify-center rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-100"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -152,16 +139,16 @@ export default function LoginPage() {
 
               <button
                 formAction={() => {}}
-                className="w-full inline-flex justify-center py-2 px-4 rounded-md shadow-sm bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-medium text-white hover:from-purple-600 hover:to-pink-600"
+                className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-600 hover:to-pink-600"
               >
                 <InstagramLogo />
                 <span className="ml-2">Instagram</span>
               </button>
             </div>
-            <div className="text-sm text-white text-center py-3">
+            <div className="py-3 text-center text-sm text-white">
               Don&apos;t have an account yet?{" "}
               <Link
-                className="text-indigo-600 hover:text-indigo-500 text-xs hover:underline"
+                className="text-xs text-indigo-600 hover:text-indigo-500 hover:underline"
                 href="/auth/signup"
               >
                 Sign Up here
@@ -183,23 +170,11 @@ const InstagramLogo = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <defs>
-      <radialGradient
-        id="0"
-        cx="332.14"
-        cy="2511.81"
-        r="3263.54"
-        gradientUnits="userSpaceOnUse"
-      >
+      <radialGradient id="0" cx="332.14" cy="2511.81" r="3263.54" gradientUnits="userSpaceOnUse">
         <stop offset=".09" stopColor="#fa8f21" />
         <stop offset=".78" stopColor="#d82d7e" />
       </radialGradient>
-      <radialGradient
-        id="1"
-        cx="1516.14"
-        cy="2623.81"
-        r="2572.12"
-        gradientUnits="userSpaceOnUse"
-      >
+      <radialGradient id="1" cx="1516.14" cy="2623.81" r="2572.12" gradientUnits="userSpaceOnUse">
         <stop offset=".64" stopColor="#8c3aaa" stopOpacity="0" />
         <stop offset="1" stopColor="#8c3aaa" />
       </radialGradient>

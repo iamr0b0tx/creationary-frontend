@@ -11,12 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "./ui/charts";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/charts";
 
 export const description = "A linear line chart";
 
@@ -62,10 +57,7 @@ export function ChartLineLinear() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Line
               className="!h-full"
               dataKey="desktop"

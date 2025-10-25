@@ -83,8 +83,7 @@ const contentData = [
     views: 15600,
     likes: 1200,
     duration: "30 days",
-    description:
-      "Transform your fitness with daily workout routines that require no equipment.",
+    description: "Transform your fitness with daily workout routines that require no equipment.",
   },
   {
     id: 4,
@@ -105,8 +104,7 @@ const contentData = [
     views: 5400,
     likes: 234,
     duration: "4h 15m",
-    description:
-      "Learn authentic Italian recipes and cooking techniques from a traditional chef.",
+    description: "Learn authentic Italian recipes and cooking techniques from a traditional chef.",
   },
   {
     id: 5,
@@ -127,8 +125,7 @@ const contentData = [
     views: 3200,
     likes: 189,
     duration: "1h 50m",
-    description:
-      "Start your digital art journey with fundamental techniques and software basics.",
+    description: "Start your digital art journey with fundamental techniques and software basics.",
   },
   {
     id: 6,
@@ -149,8 +146,7 @@ const contentData = [
     views: 7800,
     likes: 456,
     duration: "5h 30m",
-    description:
-      "Build a successful startup with proven strategies and real case studies.",
+    description: "Build a successful startup with proven strategies and real case studies.",
   },
 ];
 

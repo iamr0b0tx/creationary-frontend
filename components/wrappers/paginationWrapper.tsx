@@ -60,11 +60,7 @@ export const PaginationWrapper = ({
           <PaginationPrevious
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             aria-disabled={currentPage === 1}
-            className={
-              currentPage === 1
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
-            }
+            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
           />
         </PaginationItem>
         {pageNumbers.map((page, idx) =>
@@ -89,9 +85,7 @@ export const PaginationWrapper = ({
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             aria-disabled={currentPage === totalPages}
             className={
-              currentPage === totalPages
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
+              currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
             }
           />
         </PaginationItem>

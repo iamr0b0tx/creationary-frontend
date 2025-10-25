@@ -16,10 +16,19 @@ class Logger {
         this.error = () => {};
         break;
       case "development":
-        this.log = console.log.bind(console, [date.toISOString().split('T')[1], "LOG"].join(" "));
-        this.info = console.info.bind(console, [date.toISOString().split('T')[1], "INFO"].join(" "));
-        this.warn = console.warn.bind(console, [date.toISOString().split('T')[1], "WARN"].join(" "));
-        this.error = console.error.bind(console, [date.toISOString().split('T')[1], "ERROR"].join(" "));
+        this.log = console.log.bind(console, [date.toISOString().split("T")[1], "LOG"].join(" "));
+        this.info = console.info.bind(
+          console,
+          [date.toISOString().split("T")[1], "INFO"].join(" ")
+        );
+        this.warn = console.warn.bind(
+          console,
+          [date.toISOString().split("T")[1], "WARN"].join(" ")
+        );
+        this.error = console.error.bind(
+          console,
+          [date.toISOString().split("T")[1], "ERROR"].join(" ")
+        );
         break;
     }
   }
