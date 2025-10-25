@@ -6,6 +6,7 @@
   "useTabs": false,
   "printWidth": 100,
   "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "ignore",
   "jsxSingleQuote": false,
   "semi": true,
   "plugins": ["prettier-plugin-tailwindcss"]
