@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -45,8 +40,7 @@ export default function ExplorePage() {
   };
 
   const filteredContent = contentData.filter((content) => {
-    const matchesCategory =
-      selectedCategory === "All" || content.category === selectedCategory;
+    const matchesCategory = selectedCategory === "All" || content.category === selectedCategory;
     const matchesSearch =
       content.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       content.creator.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -78,13 +72,13 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Play className="w-4 h-4 text-primary-foreground" />
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Play className="text-primary-foreground h-4 w-4" />
             </div>
             <span className="text-xl font-bold">Creationary</span>
           </Link>
@@ -103,17 +97,15 @@ export default function ExplorePage() {
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Explore Content</h1>
-          <p className="text-muted-foreground">
-            Discover amazing content from talented creators
-          </p>
+          <h1 className="mb-2 text-3xl font-bold">Explore Content</h1>
+          <p className="text-muted-foreground">Discover amazing content from talented creators</p>
         </div>
 
         {/* Search and Filters */}
         <div className="mb-8 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Search content or creators..."
                 value={searchQuery}
@@ -125,7 +117,7 @@ export default function ExplorePage() {
               />
             </div>
             <Button variant="outline">
-              <Filter className="w-4 h-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               Filters
             </Button>
           </div>
@@ -147,11 +139,11 @@ export default function ExplorePage() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {paginatedContent.map((content, index) => (
             <Card
               key={content.id + "" + index}
-              className="overflow-hidden pt-0 pb-0 hover:shadow-lg transition-all duration-300 animate-fade-in-up group cursor-pointer"
+              className="animate-fade-in-up group cursor-pointer overflow-hidden pt-0 pb-0 transition-all duration-300 hover:shadow-lg"
               style={{ animationDelay: `${index * 0.1}s` }}
               onMouseEnter={() => setHoveredCard(content.id)}
               onMouseLeave={() => setHoveredCard(null)}
@@ -225,13 +217,11 @@ export default function ExplorePage() {
               </div>
               {/* Content Image End */}
 
-              <CardHeader className="pb-3 h-full">
-                <div className="flex items-center justify-between mb-2">
+              <CardHeader className="h-full pb-3">
+                <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage
-                        src={content.creator.avatar || "/placeholder.svg"}
-                      />
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={content.creator.avatar || "/placeholder.svg"} />
                       <AvatarFallback>
                         {content.creator.name
                           .split(" ")
@@ -241,31 +231,25 @@ export default function ExplorePage() {
                     </Avatar>
                     <Link
                       href={`/user/${content.creator.username}`}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                     >
                       {content.creator.name}
                     </Link>
                     {content.creator.verified && (
-                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500">
+                        <span className="text-xs text-white">✓</span>
                       </div>
                     )}
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">
-                      {content.rating}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      ({content.reviews})
-                    </span>
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm font-medium">{content.rating}</span>
+                    <span className="text-muted-foreground text-sm">({content.reviews})</span>
                   </div>
                 </div>
 
-                <CardTitle className="text-lg line-clamp-2 mb-2">
-                  {content.title}
-                </CardTitle>
-                <CardDescription className="line-clamp-2 mb-3">
+                <CardTitle className="mb-2 line-clamp-2 text-lg">{content.title}</CardTitle>
+                <CardDescription className="mb-3 line-clamp-2">
                   {content.description}
                 </CardDescription>
 
@@ -273,19 +257,15 @@ export default function ExplorePage() {
                   <div className="flex items-center space-x-2">
                     {content.price > 0 ? (
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-primary">
-                          ${content.price}
-                        </span>
+                        <span className="text-primary text-lg font-bold">${content.price}</span>
                         {content.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">
+                          <span className="text-muted-foreground text-sm line-through">
                             ${content.originalPrice}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-lg font-bold text-green-600">
-                        Free
-                      </span>
+                      <span className="text-lg font-bold text-green-600">Free</span>
                     )}
                   </div>
                   <Badge variant="outline" className="text-xs">

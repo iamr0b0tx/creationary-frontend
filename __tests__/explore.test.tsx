@@ -21,9 +21,7 @@ afterEach(() => {
 test("Explore Page renders without crashing", () => {
   const { container } = render(<ExplorePage />);
   expect(container).toBeDefined();
-  expect(
-    screen.getByText("Discover amazing content from talented creators")
-  ).toBeDefined();
+  expect(screen.getByText("Discover amazing content from talented creators")).toBeDefined();
 });
 
 test("Explore Page has main heading", () => {
@@ -35,7 +33,5 @@ test("Explore Page has main heading", () => {
 test("Explore Page has search functionality", () => {
   render(<ExplorePage />);
   const searchInput = screen.getByRole("textbox");
-  expect(searchInput.getAttribute("placeholder")).toBe(
-    "Search content or creators..."
-  );
+  expect(searchInput.getAttribute("placeholder")).toBe("Search content or creators...");
 });

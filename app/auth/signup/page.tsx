@@ -4,13 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Play, Eye, EyeOff, Mail, Lock, Check } from "lucide-react";
 import Image from "next/image";
@@ -25,14 +19,12 @@ const SignUpCarouselContent = [
   },
   {
     title: "Share your knowledge",
-    description:
-      "Become a creator and share your expertise with a global audience.",
+    description: "Become a creator and share your expertise with a global audience.",
     icon: "Video",
   },
   {
     title: "Flexible learning",
-    description:
-      "Learn at your own pace with our on-demand courses and resources.",
+    description: "Learn at your own pace with our on-demand courses and resources.",
     icon: "Clock",
   },
 ];
@@ -49,10 +41,7 @@ export default function SignUpPage() {
   });
 
   const [contentToDisplay, setContentToDisplay] = useState(0);
-  const [actionState, action, actionPending] = useActionState(
-    handleRegister,
-    undefined
-  );
+  const [actionState, action, actionPending] = useActionState(handleRegister, undefined);
   const [displayErrors, setDisplayErrors] = useState(false);
 
   const actionStateErrors = actionState?.errors || {};
@@ -87,35 +76,30 @@ export default function SignUpPage() {
   // router.push("/explore");
 
   return (
-    <div className=" max-h-screen mx-auto sm:mx-20 lg:mx-36 flex justify-center py-12">
-      <Image
-        alt="Background"
-        src="/bg-img.png"
-        fill
-        className="object-cover h-screen -z-10"
-      />
-      <div className="absolute inset-0 bg-black opacity-50 -z-[5]"></div>
+    <div className="mx-auto flex max-h-screen justify-center py-12 sm:mx-20 lg:mx-36">
+      <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
+      <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 p-4">
+      <div className="absolute top-0 right-0 left-0 p-4">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Play className="w-4 h-4 text-primary-foreground" />
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Play className="text-primary-foreground h-4 w-4" />
             </div>
-            <span className="text-xl text-white font-bold">Creationary</span>
+            <span className="text-xl font-bold text-white">Creationary</span>
           </Link>
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-2 z-10">
-        <div className="relative w-full flex ml-14 mr-10 flex-col justify-center gap-[9rem]">
+      <div className="z-10 grid w-full grid-cols-2">
+        <div className="relative mr-10 ml-14 flex w-full flex-col justify-center gap-[9rem]">
           <div className="flex items-center gap-8">
-            <div className="w-24 h-20 bg-primary rounded-xl flex items-center justify-center">
-              <Play className="w-8 h-8 text-primary-foreground" />
+            <div className="bg-primary flex h-20 w-24 items-center justify-center rounded-xl">
+              <Play className="text-primary-foreground h-8 w-8" />
             </div>
-            <span className="text-4xl text-white font-bold">Creationary</span>
+            <span className="text-4xl font-bold text-white">Creationary</span>
           </div>
-          <div className="overflow-hidden w-[calc(100%-3.5rem)] h-32">
+          <div className="h-32 w-[calc(100%-3.5rem)] overflow-hidden">
             <div
               style={{
                 transform: `translateX(-${contentToDisplay * 100}%)`,
@@ -125,14 +109,10 @@ export default function SignUpPage() {
               {SignUpCarouselContent.map((item, index) => (
                 <div
                   key={index}
-                  className="mb-6 flex-wrap flex-shrink-0 w-full text-wrap text-left"
+                  className="mb-6 w-full flex-shrink-0 flex-wrap text-left text-wrap"
                 >
-                  <h2 className="text-4xl text-white font-semibold ">
-                    {item.title}
-                  </h2>
-                  <p className="mt-2 text-lg text-white w-full text-wrap">
-                    {item.description}
-                  </p>
+                  <h2 className="text-4xl font-semibold text-white">{item.title}</h2>
+                  <p className="mt-2 w-full text-lg text-wrap text-white">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -140,7 +120,7 @@ export default function SignUpPage() {
           <div className="absolute bottom-[100px] flex gap-4">
             {SignUpCarouselContent.map((item, index) => (
               <div
-                className={`w-[4rem] h-1 ${
+                className={`h-1 w-[4rem] ${
                   contentToDisplay === index ? "bg-white" : "bg-white/40"
                 }`}
                 key={index}
@@ -148,11 +128,9 @@ export default function SignUpPage() {
             ))}
           </div>
         </div>
-        <Card className="shadow-none border-0 max-h-screen max-w-md">
-          <CardHeader className="text-center pb-3">
-            <CardTitle className="text-2xl font-bold">
-              Join Creationary
-            </CardTitle>
+        <Card className="max-h-screen max-w-md border-0 shadow-none">
+          <CardHeader className="pb-3 text-center">
+            <CardTitle className="text-2xl font-bold">Join Creationary</CardTitle>
             <CardDescription className="text-sm">
               Create your account to start learning or sharing your knowledge
             </CardDescription>
@@ -175,13 +153,10 @@ export default function SignUpPage() {
                     placeholder="First name"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className={`${
-                      actionStateErrors.firstName ? "border-destructive" : ""
-                    }`}
+                    className={`${actionStateErrors.firstName ? "border-destructive" : ""}`}
                     required
                   />
-                  {displayErrors &&
-                    DisplayErrors("firstName", actionStateErrors)}
+                  {displayErrors && DisplayErrors("firstName", actionStateErrors)}
                 </div>
                 <div>
                   <Input
@@ -190,29 +165,24 @@ export default function SignUpPage() {
                     placeholder="Last name"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className={`${
-                      actionStateErrors.lastName ? "border-destructive" : ""
-                    }`}
+                    className={`${actionStateErrors.lastName ? "border-destructive" : ""}`}
                     required
                   />
-                  {displayErrors &&
-                    DisplayErrors("lastName", actionStateErrors)}
+                  {displayErrors && DisplayErrors("lastName", actionStateErrors)}
                 </div>
               </div>
 
               {/* Email */}
               <div>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                   <Input
                     type="email"
                     name="email"
                     placeholder="Email address"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`pl-10 ${
-                      actionStateErrors.email ? "border-destructive" : ""
-                    }`}
+                    className={`pl-10 ${actionStateErrors.email ? "border-destructive" : ""}`}
                     required
                   />
                 </div>
@@ -222,14 +192,14 @@ export default function SignUpPage() {
               {/* Password */}
               <div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`pl-10 pr-10 ${
+                    className={`pr-10 pl-10 ${
                       actionStateErrors.password ? "border-destructive" : ""
                     }`}
                     required
@@ -237,13 +207,9 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {displayErrors && DisplayErrors("password", actionStateErrors)}
@@ -252,7 +218,7 @@ export default function SignUpPage() {
               {/* Confirm Password */}
               <div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                   <Input
                     type="password"
                     name="confirmPassword"
@@ -260,17 +226,13 @@ export default function SignUpPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className={`pl-10 ${
-                      formData.confirmPassword !== formData.password
-                        ? "border-destructive"
-                        : ""
+                      formData.confirmPassword !== formData.password ? "border-destructive" : ""
                     }`}
                     required
                   />
                 </div>
                 {formData.confirmPassword !== formData.password && (
-                  <p className="text-xs text-destructive mt-1">
-                    Passwords do not match
-                  </p>
+                  <p className="text-destructive mt-1 text-xs">Passwords do not match</p>
                 )}
               </div>
 
@@ -298,17 +260,11 @@ export default function SignUpPage() {
                 <div className="text-sm leading-5">
                   <label htmlFor="agreeToTerms" className="cursor-pointer">
                     I agree to the{" "}
-                    <Link
-                      href="/terms"
-                      className="text-primary hover:underline"
-                    >
+                    <Link href="/terms" className="text-primary hover:underline">
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link
-                      href="/privacy"
-                      className="text-primary hover:underline"
-                    >
+                    <Link href="/privacy" className="text-primary hover:underline">
                       Privacy Policy
                     </Link>
                   </label>
@@ -323,7 +279,7 @@ export default function SignUpPage() {
               >
                 {actionPending ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     <span>Creating account...</span>
                   </div>
                 ) : (
@@ -334,15 +290,15 @@ export default function SignUpPage() {
 
             {/* Divider */}
             <div className="my-6 flex items-center">
-              <div className="flex-1 border-t border-muted"></div>
-              <div className="mx-4 text-sm text-muted-foreground">or</div>
-              <div className="flex-1 border-t border-muted"></div>
+              <div className="border-muted flex-1 border-t"></div>
+              <div className="text-muted-foreground mx-4 text-sm">or</div>
+              <div className="border-muted flex-1 border-t"></div>
             </div>
 
             {/* Social Login Options */}
             <div className="space-y-3">
               <Button variant="outline" className="w-full" type="button">
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -364,11 +320,7 @@ export default function SignUpPage() {
               </Button>
 
               <Button variant="outline" className="w-full" type="button">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                 </svg>
                 Continue with Instagram
@@ -377,12 +329,9 @@ export default function SignUpPage() {
 
             {/* Login Link */}
             <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-primary hover:underline font-medium"
-                >
+                <Link href="/auth/login" className="text-primary font-medium hover:underline">
                   Sign in
                 </Link>
               </p>
@@ -401,7 +350,7 @@ const DisplayErrors = (
   return (
     <>
       {actionStateErrors[name] && (
-        <p className="text-xs text-destructive mt-1">
+        <p className="text-destructive mt-1 text-xs">
           {typeof actionStateErrors[name].errors === "string" ? (
             actionStateErrors[name].errors
           ) : (

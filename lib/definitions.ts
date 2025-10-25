@@ -11,7 +11,8 @@ export const signUpFormSchema = z.object({
     .regex(/[0-9]/, { message: "Contain at least one number." })
     .regex(/[^a-zA-Z0-9]/, {
       message: "Contain at least one special character.",
-    }).trim(),
+    })
+    .trim(),
 });
 
 export const loginFormSchema = z.object({
@@ -23,5 +24,6 @@ export const loginFormSchema = z.object({
     .regex(/[0-9]/, { message: "Contain at least one number." })
     .regex(/[^a-zA-Z0-9]/, {
       message: "Contain at least one special character.",
-    }).trim(),
+    })
+    .trim(),
 });

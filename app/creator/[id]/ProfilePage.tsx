@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -54,13 +48,12 @@ export default function UserProfileContent({ id }: { id: number }) {
 
   if (!creator) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md w-full">
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle>Creator Not Found</CardTitle>
             <CardDescription>
-              The creator you&apos;re looking for doesn&apos;t exist or has been
-              removed.
+              The creator you&apos;re looking for doesn&apos;t exist or has been removed.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -74,18 +67,18 @@ export default function UserProfileContent({ id }: { id: number }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Play className="w-4 h-4 text-primary-foreground" />
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Play className="text-primary-foreground h-4 w-4" />
             </div>
             <span className="text-xl font-bold">Creationary</span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden items-center space-x-6 md:flex">
             <Link
               href="/explore"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -105,14 +98,14 @@ export default function UserProfileContent({ id }: { id: number }) {
       </header>
 
       {/* Cover Image */}
-      <div className="relative h-64 md:h-80 overflow-hidden">
+      <div className="relative h-64 overflow-hidden md:h-80">
         <Image
           //src={creator.coverImage}
           src={"/default_image.png"}
           width={1000}
           height={1000}
           alt="Cover"
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           onError={(e) => {
             const target = e.currentTarget;
             // Only replace once to avoid infinite loop
@@ -125,12 +118,12 @@ export default function UserProfileContent({ id }: { id: number }) {
       </div>
 
       {/* Profile Section */}
-      <div className="container mx-auto px-4 -mt-16 relative z-10">
-        <div className="flex flex-col md:flex-row gap-6 mb-8">
+      <div className="relative z-10 container mx-auto -mt-16 px-4">
+        <div className="mb-8 flex flex-col gap-6 md:flex-row">
           {/* Profile Info */}
           <div className="flex-1">
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-4">
-              <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
+            <div className="mb-4 flex flex-col items-start gap-4 md:flex-row md:items-end">
+              <Avatar className="border-background h-32 w-32 border-4 shadow-xl">
                 <AvatarImage src={creator.avatar} alt={creator.name} />
                 <AvatarFallback className="text-2xl">
                   {creator.name
@@ -141,16 +134,11 @@ export default function UserProfileContent({ id }: { id: number }) {
               </Avatar>
 
               <div className="flex-1 md:ml-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <h1 className="text-3xl font-bold  text-amber-100">
-                    {creator.name}
-                  </h1>
+                <div className="mb-2 flex items-center gap-2">
+                  <h1 className="text-3xl font-bold text-amber-100">{creator.name}</h1>
                   {creator.verified && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-blue-100 text-blue-800"
-                    >
-                      <Star className="w-3 h-3 mr-1" />
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      <Star className="mr-1 h-3 w-3" />
                       Verified
                     </Badge>
                   )}
@@ -158,13 +146,13 @@ export default function UserProfileContent({ id }: { id: number }) {
                 <Badge variant="outline" className="mb-2">
                   {creator.category}
                 </Badge>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                <div className="text-muted-foreground mb-2 flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
+                    <MapPin className="h-4 w-4" />
                     {creator.location}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
+                    <Calendar className="h-4 w-4" />
                     Joined{" "}
                     {new Date(creator.joinedDate).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -175,46 +163,36 @@ export default function UserProfileContent({ id }: { id: number }) {
               </div>
             </div>
             <div className="md:pl-[10.2rem]">
-              <p className="text-muted-foreground mb-4 ">{creator.bio}</p>
+              <p className="text-muted-foreground mb-4">{creator.bio}</p>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <div className="text-left">
-                  <div className="text-2xl font-bold">
-                    {creator.followers.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Followers</div>
+                  <div className="text-2xl font-bold">{creator.followers.toLocaleString()}</div>
+                  <div className="text-muted-foreground text-sm">Followers</div>
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold">
-                    {creator.stats.totalContent}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Content</div>
+                  <div className="text-2xl font-bold">{creator.stats.totalContent}</div>
+                  <div className="text-muted-foreground text-sm">Content</div>
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold">
-                    {creator.stats.avgRating}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Rating</div>
+                  <div className="text-2xl font-bold">{creator.stats.avgRating}</div>
+                  <div className="text-muted-foreground text-sm">Rating</div>
                 </div>
                 <div className="text-left">
                   <div className="text-2xl font-bold">
                     {creator.stats.totalViews.toLocaleString()}
                   </div>
-                  <div className="text-sm text-muted-foreground">Views</div>
+                  <div className="text-muted-foreground text-sm">Views</div>
                 </div>
               </div>
 
               {/* Social Links */}
-              <div className="flex items-center gap-3 mb-6">
+              <div className="mb-6 flex items-center gap-3">
                 {creator.socialLinks.website && (
                   <Button variant="outline" size="icon" className="hover:bg-amber-100" asChild>
-                    <a
-                      href={creator.socialLinks.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Globe className="w-4 h-4" />
+                    <a href={creator.socialLinks.website} target="_blank" rel="noopener noreferrer">
+                      <Globe className="h-4 w-4" />
                     </a>
                   </Button>
                 )}
@@ -233,22 +211,23 @@ export default function UserProfileContent({ id }: { id: number }) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Instagram className="w-4 h-4" />
+                      <Instagram className="h-4 w-4" />
                     </a>
                   </Button>
                 )}
                 {creator.socialLinks.twitter && (
-                  <Button variant="outline" className="hover:bg-black/90 hover:text-white" size="icon" asChild>
+                  <Button
+                    variant="outline"
+                    className="hover:bg-black/90 hover:text-white"
+                    size="icon"
+                    asChild
+                  >
                     <a
-                      href={`https://x.com/${creator.socialLinks.twitter.replace(
-                        "@",
-                        ""
-                      )}`}
+                      href={`https://x.com/${creator.socialLinks.twitter.replace("@", "")}`}
                       target="_blank"
-                      
                       rel="noopener noreferrer"
                     >
-                     <XIcon className="w-4 h-4" />
+                      <XIcon className="h-4 w-4" />
                     </a>
                   </Button>
                 )}
@@ -263,40 +242,40 @@ export default function UserProfileContent({ id }: { id: number }) {
               variant={isFollowing ? "outline" : "default"}
               className="w-full"
             >
-              <Users className="w-4 h-4 mr-2" />
+              <Users className="mr-2 h-4 w-4" />
               {isFollowing ? "Following" : "Follow"}
             </Button>
             <Button variant="outline" className="w-full">
-              <MessageCircle className="w-4 h-4 mr-2" />
+              <MessageCircle className="mr-2 h-4 w-4" />
               Message
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full"
               onClick={async () => {
-              const shareData = {
-                title: `${creator.name} - Creationary`,
-                text: `Check out ${creator.name}'s profile on Creationary!`,
-                url: window.location.href,
-              };
+                const shareData = {
+                  title: `${creator.name} - Creationary`,
+                  text: `Check out ${creator.name}'s profile on Creationary!`,
+                  url: window.location.href,
+                };
 
-              try {
-                // Check if Web Share API is supported (works on mobile and some desktop browsers)
-                if (navigator.share) {
-                await navigator.share(shareData);
-                } else {
-                await navigator.clipboard.writeText(window.location.href);
-                alert('Link copied to clipboard!');
+                try {
+                  // Check if Web Share API is supported (works on mobile and some desktop browsers)
+                  if (navigator.share) {
+                    await navigator.share(shareData);
+                  } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert("Link copied to clipboard!");
+                  }
+                } catch (error) {
+                  // User cancelled share or error occurred
+                  if (error instanceof Error && error.name !== "AbortError") {
+                    logger.error("Error sharing:", error);
+                  }
                 }
-              } catch (error) {
-                // User cancelled share or error occurred
-                if (error instanceof Error && error.name !== 'AbortError') {
-                logger.error('Error sharing:', error);
-                }
-              }
               }}
             >
-              <Share className="w-4 h-4 mr-2" />
+              <Share className="mr-2 h-4 w-4" />
               Share
             </Button>
           </div>
@@ -305,22 +284,15 @@ export default function UserProfileContent({ id }: { id: number }) {
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
           <TabsList className="mb-6">
-            <TabsTrigger value="content">
-              Content ({creator.content.length})
-            </TabsTrigger>
+            <TabsTrigger value="content">Content ({creator.content.length})</TabsTrigger>
             <TabsTrigger value="about">About</TabsTrigger>
-            <TabsTrigger value="reviews">
-              Reviews ({creator.stats.totalReviews})
-            </TabsTrigger>
+            <TabsTrigger value="reviews">Reviews ({creator.stats.totalReviews})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="content">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {creator.content.map((item) => (
-                <Card
-                  key={item.id}
-                  className="group hover:shadow-lg transition-all duration-300"
-                >
+                <Card key={item.id} className="group transition-all duration-300 hover:shadow-lg">
                   {/* Note that this is remove because we do no support images currently. */}
                   {/* <div className="relative aspect-video overflow-hidden rounded-t-lg">
                     <img
@@ -343,40 +315,30 @@ export default function UserProfileContent({ id }: { id: number }) {
                   </div> */}
 
                   <CardHeader className="pb-3">
-                    <CardTitle className="line-clamp-2 text-lg">
-                      {item.title}
-                    </CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {item.description}
-                    </CardDescription>
+                    <CardTitle className="line-clamp-2 text-lg">{item.title}</CardTitle>
+                    <CardDescription className="line-clamp-2">{item.description}</CardDescription>
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">
-                            {item.rating}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            ({item.reviews})
-                          </span>
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <span className="text-sm font-medium">{item.rating}</span>
+                          <span className="text-muted-foreground text-sm">({item.reviews})</span>
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {item.duration}
-                      </div>
+                      <div className="text-muted-foreground text-sm">{item.duration}</div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="text-muted-foreground flex items-center gap-4 text-sm">
                         <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="h-4 w-4" />
                           {item.views.toLocaleString()}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
+                          <Heart className="h-4 w-4" />
                           {item.likes.toLocaleString()}
                         </div>
                       </div>
@@ -385,11 +347,11 @@ export default function UserProfileContent({ id }: { id: number }) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {item.originalPrice && (
-                          <span className="text-sm leading-[1rem] text-muted-foreground line-through">
+                          <span className="text-muted-foreground text-sm leading-[1rem] line-through">
                             ₦{item.originalPrice}
                           </span>
                         )}
-                        <span className="text-lg font-bold text-primary">
+                        <span className="text-primary text-lg font-bold">
                           {item.price === 0 ? "Free" : `₦${item.price}`}
                         </span>
                       </div>
@@ -417,37 +379,34 @@ export default function UserProfileContent({ id }: { id: number }) {
           <TabsContent value="about">
             <Card>
               <CardHeader>
-                <CardTitle className="bg-[url('/yellow-brushstroke.webp')] text-xl w-fit py-1 bg-[length:110%_110%] h-8 bg-no-repeat ">
+                <CardTitle className="h-8 w-fit bg-[url('/yellow-brushstroke.webp')] bg-[length:110%_110%] bg-no-repeat py-1 text-xl">
                   About {creator.name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 divide-y-2">
                   <div>
-                    <h4 className="font-semibold mb-2">Bio</h4>
+                    <h4 className="mb-2 font-semibold">Bio</h4>
                     <p className="text-muted-foreground">{creator.bio}</p>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">Specialization</h4>
+                    <h4 className="mb-2 font-semibold">Specialization</h4>
                     <Badge variant="outline" className="mb-2">
                       {creator.category}
                     </Badge>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">Location</h4>
+                    <h4 className="mb-2 font-semibold">Location</h4>
                     <p className="text-muted-foreground">{creator.location}</p>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">Member Since</h4>
+                    <h4 className="mb-2 font-semibold">Member Since</h4>
                     <p className="text-muted-foreground">
-                      {new Date(creator.joinedDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
+                      {new Date(creator.joinedDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>
@@ -460,8 +419,8 @@ export default function UserProfileContent({ id }: { id: number }) {
               {/* Reviews would be loaded here */}
               <Card>
                 <CardContent className="pt-6">
-                  <div className="text-center text-muted-foreground">
-                    <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <div className="text-muted-foreground text-center">
+                    <MessageCircle className="mx-auto mb-4 h-12 w-12 opacity-50" />
                     <p>Reviews feature coming soon!</p>
                   </div>
                 </CardContent>

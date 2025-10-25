@@ -69,8 +69,7 @@ const creators = [
         views: 15600,
         likes: 1200,
         duration: "4h 15m",
-        description:
-          "Complete guide to professional photo editing workflow in Adobe Lightroom.",
+        description: "Complete guide to professional photo editing workflow in Adobe Lightroom.",
         publishedAt: "2024-01-05",
       },
     ],
