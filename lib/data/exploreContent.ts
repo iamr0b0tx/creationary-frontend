@@ -1,3 +1,5 @@
+import {logger} from "../clientLogger";
+
 export type TCategory =
   | "Photography"
   | "Music"
@@ -19,9 +21,27 @@ const categories: TCategory[] = [
   "Business",
 ];
 
+const getContentData = async () => {
+  try {
+    const response = await fetch(`${process.env.BASE_URL}/api/posts`, {
+      method: 'POST',
+    })
+
+    if(!response.ok) {
+      console.log('Failed to fetch content data:', response.statusText, response);
+      throw new Error('Failed to fetch content')
+    }
+    const content = await response.json();
+    logger.info('Content data fetched successfully', content);
+    return content.data;
+  }catch(err) {
+    logger.error('Error fetching content data:', err);
+  }
+}
+
 const contentData = [
   {
-    id: 1,
+    id: "1",
     title: "Professional Portrait Photography Masterclass",
     creator: {
       name: "Sarah Chen",
@@ -43,7 +63,7 @@ const contentData = [
       "Learn advanced portrait lighting techniques and posing strategies used by professional photographers.",
   },
   {
-    id: 2,
+    id: "2",
     title: "Beat Making Fundamentals in Logic Pro",
     creator: {
       name: "Marcus Johnson",
@@ -65,7 +85,7 @@ const contentData = [
       "Master the basics of beat making with step-by-step tutorials and real-world examples.",
   },
   {
-    id: 3,
+    id: "3",
     title: "30-Day Home Workout Challenge",
     creator: {
       name: "Elena Rodriguez",
@@ -86,7 +106,7 @@ const contentData = [
     description: "Transform your fitness with daily workout routines that require no equipment.",
   },
   {
-    id: 4,
+    id: "4",
     title: "Italian Cooking Essentials",
     creator: {
       name: "Giuseppe Romano",
@@ -107,7 +127,7 @@ const contentData = [
     description: "Learn authentic Italian recipes and cooking techniques from a traditional chef.",
   },
   {
-    id: 5,
+    id: "5",
     title: "Digital Art for Beginners",
     creator: {
       name: "Yuki Tanaka",
@@ -128,7 +148,7 @@ const contentData = [
     description: "Start your digital art journey with fundamental techniques and software basics.",
   },
   {
-    id: 6,
+    id: "6",
     title: "Startup Business Strategy",
     creator: {
       name: "Alex Thompson",
@@ -150,4 +170,4 @@ const contentData = [
   },
 ];
 
-export { categories, contentData };
+export { categories, contentData, getContentData };
