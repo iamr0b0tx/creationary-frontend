@@ -23,9 +23,7 @@ const categories: TCategory[] = [
 
 const getContentData = async () => {
   try {
-    const response = await fetch(`${process.env.BASE_URL}/api/posts`, {
-      method: 'POST',
-    })
+    const response = await fetch(`${process.env.BASE_URL}/api/posts`)
 
     if(!response.ok) {
       console.log('Failed to fetch content data:', response.statusText, response);
