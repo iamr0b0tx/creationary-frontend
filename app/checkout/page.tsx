@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Play, ArrowLeft, Shield, Star, CheckCircle, Gift } from "lucide-react";
 import { getProductById, TContentItem } from "@/lib/data/exploreContent";
 import { posthog } from "posthog-js";
+import { toast } from "sonner";
 
 export type ReferenceObj = {
   message: string;
@@ -41,6 +42,8 @@ function CheckoutComponent() {
     lastName: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [currentlySelectedPlan, setCurrentlySelectedPlan] =
+    useState<string>("Lifetime");
 
   useEffect(() => {
     if (productId || !isProcessing) {
@@ -112,7 +115,14 @@ function CheckoutComponent() {
       lastName: formData.lastName,
       amount: product?.price,
     });
-    alert("Payment cancelled.");
+    toast("Payment Cancelled", {
+      description: "Something went wrong during the payment process.",
+      action: {
+        label: "Undo",
+        onClick: () => console.log("Undo"),
+      },
+    });
+    setIsProcessing(false);
   };
 
   const handlePaystackPayment = async () => {
@@ -135,7 +145,7 @@ function CheckoutComponent() {
       onSuccess,
       onCancel: onClose,
     });
-    setIsProcessing(false);
+    // setIsProcessing(false);
   };
 
   if (!product) {
@@ -354,6 +364,92 @@ function CheckoutComponent() {
                     </span>
                   </div>
 
+                  {/* Pricing Options */}
+                  <div>
+                    <h3 className="font-medium mb-3">Select Plan</h3>
+                    <div className="space-y-3">
+                      {[
+                        {
+                          price: product.price,
+                          duration: "Monthly",
+                          remark: "Billed monthly, cancel anytime",
+                        },
+                        {
+                          price: Math.round(product.price * 12 * 0.8),
+                          duration: "Yearly",
+                          remark: "Save 20% with annual billing",
+                        },
+                        {
+                          price: Math.round(product.price * 24),
+                          duration: "Lifetime",
+                          remark: "One-time payment, access forever",
+                        },
+                      ].map((plan, index) => (
+                        <PriceCard
+                          key={index}
+                          price={plan.price}
+                          duration={plan.duration}
+                          remark={plan.remark}
+                          currentlySelectedPlan={currentlySelectedPlan}
+                          setCurrentlySelectedPlan={setCurrentlySelectedPlan}
+                          isRecommended={plan.duration === "Lifetime"}
+                        />
+                      ))}
+                      {/* <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="pricingPlan"
+                            value="yearly"
+                            className="w-4 h-4"
+                          />
+                          <div>
+                            <div className="font-medium">Yearly Access</div>
+                            <div className="text-sm text-muted-foreground">
+                              Save 20% with annual billing
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">
+                            ₦{Math.round(product.price * 12 * 0.8)}/yr
+                          </div>
+                          <div className="text-xs text-green-600">Save 20%</div>
+                        </div>
+                      </label>
+
+                      <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors border-primary/50 bg-primary/5">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="pricingPlan"
+                            value="lifetime"
+                            className="w-4 h-4"
+                          />
+                          <div>
+                            <div className="font-medium flex items-center gap-2">
+                              Lifetime Access
+                              <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                                Best Value
+                              </span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              One-time payment, access forever
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">
+                            ₦{Math.round(product.price * 24)}
+                          </div>
+                          <div className="text-xs text-green-600">
+                            Best deal
+                          </div>
+                        </div>
+                      </label> */}
+                    </div>
+                  </div>
+
                   {/* Submit Button */}
                   <Button
                     // type="submit"
@@ -399,3 +495,59 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
+
+type TPriceCardProps = {
+  price: number;
+  duration: string;
+  isRecommended?: boolean;
+  remark?: string;
+  currentlySelectedPlan: string;
+  setCurrentlySelectedPlan: (plan: string) => void;
+};
+
+const PriceCard = ({
+  price,
+  duration,
+  isRecommended,
+  remark,
+  currentlySelectedPlan,
+  setCurrentlySelectedPlan,
+}: TPriceCardProps) => {
+  return (
+    <label
+      className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 ${
+        currentlySelectedPlan === duration ? "border-primary/50" : ""
+      } transition-colors`}
+    >
+      <div className="flex items-center gap-3">
+        <input
+          type="radio"
+          name="pricingPlan"
+          value="monthly"
+          className="w-4 h-4"
+          checked={currentlySelectedPlan === duration}
+          onClick={() => setCurrentlySelectedPlan(duration)}
+        />
+        <div>
+          <div className="font-medium flex items-center gap-2">
+            {duration} Access{" "}
+            {isRecommended && (
+              <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                Best Value
+              </span>
+            )}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {/* Billed monthly, cancel anytime */}
+            {remark}
+          </div>
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="font-semibold">₦{price}/mo</div>
+      </div>
+    </label>
+  );
+};
+
+//monthly access
