@@ -8,16 +8,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OctagonAlert } from "lucide-react";
 import FormErrorDisplay from "@/components/ui/form-error-display";
 import { ForgotPasswordActionState } from "@/lib/types/types";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loginState, loginAction, loginPending] = useActionState(handleEmailLogin, undefined);
-  const [forgotPasswordState, forgotPasswordAction, forgotPasswordPending] = useActionState<ForgotPasswordActionState, FormData>(
-    handleForgotPassword,
-    { status: "no_action" }
-  );
+  const [forgotPasswordState, forgotPasswordAction, forgotPasswordPending] = useActionState<
+    ForgotPasswordActionState,
+    FormData
+  >(handleForgotPassword, { status: "no_action" });
   const [clearErrors, setClearErrors] = useState(false);
   const [pageState, setPageState] = useState<"login" | "forgot-password">("login");
 
@@ -111,10 +112,11 @@ export default function LoginPage() {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button
+                <Button
+                  disabled={true}
                   // onClick={() => handleProviderLogin("google")}
                   formAction={() => {}}
-                  className="inline-flex w-full justify-center rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-100"
+                  className="inline-flex w-full justify-center rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-100 disabled:opacity-40"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -143,15 +145,16 @@ export default function LoginPage() {
                     ></path>
                   </svg>
                   <span className="ml-2">Google</span>
-                </button>
+                </Button>
 
-                <button
+                <Button
+                  disabled={true}
                   formAction={() => {}}
-                  className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-600 hover:to-pink-600"
+                  className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-600 hover:to-pink-600 disabled:opacity-40"
                 >
                   <InstagramLogo />
                   <span className="ml-2">Instagram</span>
-                </button>
+                </Button>
               </div>
             </div>
           </form>
