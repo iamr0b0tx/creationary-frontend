@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Play, Heart, Lock, Users, DollarSign, TrendingUp } from "lucide-react";
+import { Play, Heart, Lock } from "lucide-react";
 import Link from "next/link";
 import { featuredContent, featuredCreators } from "@/lib/data/homepageDummy";
 
 
 export default function HomePage() {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [_hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
     <div className="home-wrapper">

@@ -15,13 +15,10 @@ import {
   Calendar,
   Star,
   Play,
-  Lock,
   Share,
   MessageCircle,
   Instagram,
-  Twitter,
   Globe,
-  TwitterIcon,
   createLucideIcon,
 } from "lucide-react";
 import Link from "next/link";

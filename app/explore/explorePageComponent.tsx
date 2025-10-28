@@ -7,7 +7,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Heart, Eye, Lock, Play, Star } from "lucide-react";
+import { Search, Filter,  Play, Star } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
 import { categories, contentData, TCategory } from "@/lib/data/exploreContent";
@@ -21,7 +21,7 @@ export default function ExplorePageComponent({ initialContent }: { initialConten
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
@@ -29,12 +29,12 @@ export default function ExplorePageComponent({ initialContent }: { initialConten
     // Backend will handle content search
   };
 
-  const handleLikeContent = async (contentId: number) => {
+  const _handleLikeContent = async (contentId: number) => {
     logger.info(`Simulated API call: POST /api/content/${contentId}/like`);
     // Backend will handle like functionality
   };
 
-  const handlePurchaseContent = async (contentId: number) => {
+  const _handlePurchaseContent = async (contentId: number) => {
     // Redirect to checkout page with product ID
     router.push(`/checkout?product=${contentId}`);
   };
