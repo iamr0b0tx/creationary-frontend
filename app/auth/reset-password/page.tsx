@@ -12,8 +12,6 @@ import FormErrorDisplay from "@/components/ui/form-error-display";
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordMatchError, setPasswordMatchError] = useState(false);
-  //   const [password, setPassword] = useState("");
   const [state, loginAction, loginPending] = useActionState<ResetPasswordActionState, FormData>(
     handlePasswordReset,
     { status: "no_action" }
@@ -29,12 +27,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      {state.status == "password_mismatch" && (
-        <FormErrorDisplay message="Passwords do not match." />
-      )}
-      {state.status == "error" && (
-        <FormErrorDisplay message="An error occurred. Please try again." />
-      )}
       <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
       <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
 
@@ -44,7 +36,12 @@ export default function LoginPage() {
         </div>
 
         <form action={loginAction} className="mt-8 space-y-6">
-          {passwordMatchError && <FormErrorDisplay message="Passwords do not match." />}
+          {state.status == "password_mismatch" && (
+            <FormErrorDisplay message="Passwords do not match." />
+          )}
+          {state.status == "error" && (
+            <FormErrorDisplay message="An error occurred. Please try again." />
+          )}
           <div className="space-y-4 rounded-md">
             <div>
               <Input
@@ -63,10 +60,7 @@ export default function LoginPage() {
                 className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value.trim());
-                  setPasswordMatchError(e.target.value.trim() !== password);
-                }}
+                onChange={(e) => setConfirmPassword(e.target.value.trim())}
               />
             </div>
           </div>
