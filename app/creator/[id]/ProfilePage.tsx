@@ -297,7 +297,7 @@ export default function UserProfileContent({ id }: { id: number }) {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    {item.isPremium && (
+                    {item.isFree && (
                       <Badge className="absolute top-2 right-2 bg-yellow-500 text-yellow-900">
                         <Lock className="w-3 h-3 mr-1" />
                         Premium

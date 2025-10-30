@@ -1,14 +1,5 @@
-import {logger} from "../clientLogger";
-
-export type TCategory =
-  | "Photography"
-  | "Music"
-  | "Fitness"
-  | "Cooking"
-  | "Art"
-  | "Business"
-  | "Technology"
-  | "All";
+import { logger } from "../clientLogger";
+import { TCategory } from "../types/types";
 
 const categories: TCategory[] = [
   "All",
@@ -21,21 +12,25 @@ const categories: TCategory[] = [
   "Business",
 ];
 
-const getContentData = async () => {
+const getContentData = async (userToken: string) => {
   try {
-    const response = await fetch(`${process.env.BASE_URL}/api/posts`)
+    const response = await fetch(`${process.env.BASE_URL}/posts`, {
+      headers: {
+        "Authorization": `Bearer ${userToken}`
+      }
+    });
 
-    if(!response.ok) {
-      console.log('Failed to fetch content data:', response.statusText, response);
-      throw new Error('Failed to fetch content')
+    if (!response.ok) {
+      console.log("Failed to fetch content data:", response.statusText, response);
+      throw new Error("Failed to fetch content");
     }
     const content = await response.json();
-    logger.info('Content data fetched successfully', content);
+    logger.info("Content data fetched successfully", content);
     return content.data;
-  }catch(err) {
-    logger.error('Error fetching content data:', err);
+  } catch (err) {
+    logger.error("Error fetching content data:", err);
   }
-}
+};
 
 const contentData = [
   {
@@ -51,7 +46,7 @@ const contentData = [
     category: "Photography",
     price: 49.99,
     originalPrice: 79.99,
-    isPremium: true,
+    isFree: true,
     rating: 4.9,
     reviews: 234,
     views: 12500,
@@ -73,7 +68,7 @@ const contentData = [
     category: "Music",
     price: 0,
     originalPrice: null,
-    isPremium: false,
+    isFree: false,
     rating: 4.7,
     reviews: 156,
     views: 8900,
@@ -95,7 +90,7 @@ const contentData = [
     category: "Fitness",
     price: 29.99,
     originalPrice: null,
-    isPremium: true,
+    isFree: true,
     rating: 4.8,
     reviews: 445,
     views: 15600,
@@ -116,7 +111,7 @@ const contentData = [
     category: "Cooking",
     price: 24.99,
     originalPrice: 34.99,
-    isPremium: true,
+    isFree: true,
     rating: 4.6,
     reviews: 89,
     views: 5400,
@@ -137,7 +132,7 @@ const contentData = [
     category: "Art",
     price: 0,
     originalPrice: null,
-    isPremium: false,
+    isFree: false,
     rating: 4.5,
     reviews: 78,
     views: 3200,
@@ -158,7 +153,7 @@ const contentData = [
     category: "Business",
     price: 99.99,
     originalPrice: 149.99,
-    isPremium: true,
+    isFree: true,
     rating: 4.9,
     reviews: 167,
     views: 7800,
