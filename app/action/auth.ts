@@ -71,7 +71,7 @@ export async function handleEmailLogin(
 }
 
 export async function handleRegister(prev: unknown, formData: FormData) {
-  const email = formData.get("email");
+  const email = formData.get("email")?.toString().trim();
   const password = formData.get("password");
   const firstName = formData.get("firstName");
   const lastName = formData.get("lastName");
