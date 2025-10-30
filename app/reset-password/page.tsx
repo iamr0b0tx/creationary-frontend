@@ -6,14 +6,15 @@ import { Input } from "@/components/ui/input";
 import { handlePasswordReset } from "@/app/action/auth";
 import { Loader2 } from "lucide-react";
 import { ResetPasswordActionState } from "@/lib/types/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import FormErrorDisplay from "@/components/ui/form-error-display";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const searchParams = useSearchParams();
   const [state, loginAction, loginPending] = useActionState<ResetPasswordActionState, FormData>(
-    handlePasswordReset,
+    handlePasswordReset.bind(null, searchParams.get("token") || ""),
     { status: "no_action" }
   );
 

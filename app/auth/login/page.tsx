@@ -5,16 +5,21 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { handleEmailLogin, handleForgotPassword } from "@/app/action/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { OctagonAlert } from "lucide-react";
+import { Eye, EyeOff, OctagonAlert } from "lucide-react";
 import FormErrorDisplay from "@/components/ui/form-error-display";
-import { ForgotPasswordActionState } from "@/lib/types/types";
+import { ForgotPasswordActionState, LoginActionState } from "@/lib/types/types";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [loginState, loginAction, loginPending] = useActionState(handleEmailLogin, undefined);
+  const [loginState, loginAction, loginPending] = useActionState<LoginActionState, FormData>(
+    handleEmailLogin,
+    { status: "no_action", message: "" }
+  );
   const [forgotPasswordState, forgotPasswordAction, forgotPasswordPending] = useActionState<
     ForgotPasswordActionState,
     FormData
@@ -22,40 +27,29 @@ export default function LoginPage() {
   const [clearErrors, setClearErrors] = useState(false);
   const [pageState, setPageState] = useState<"login" | "forgot-password">("login");
 
+  const router = useRouter();
+
   useEffect(() => {
     setClearErrors(false);
     setTimeout(() => {
-      if (loginState?.errors) {
+      if (
+        loginState?.errors ||
+        forgotPasswordState.status == "error" ||
+        forgotPasswordState.status == "invalid_email"
+      ) {
         setClearErrors(true);
       }
     }, 10000);
-  }, [loginState?.errors]);
+  }, [loginState?.errors, forgotPasswordState.status]);
+
+  useEffect(() => {
+    if (loginState.status == "success") router.push("/explore");
+    if (forgotPasswordState.status == "success") router.push("/auth/reset-password");
+    // eslint-disable-next-line
+  }, [loginState.status]);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      {loginState?.errors && !clearErrors && (
-        <Alert variant="destructive" className="border-red-500 bg-red-100 text-red-500">
-          <OctagonAlert color="#ef4444" className="h-5 w-5 text-red-500" />
-          <AlertDescription>
-            {typeof loginState.errors === "string" ? (
-              <div className="text-sm">{loginState.errors}</div>
-            ) : (
-              Object.entries(loginState.errors).map(([key, value]) => (
-                <div key={key} className="text-sm">
-                  <strong>{key}:</strong>
-                  <ul className="">
-                    {String(value.errors)
-                      .split(",")
-                      .map((error, index) => (
-                        <li key={index}>{error}</li>
-                      ))}
-                  </ul>
-                </div>
-              ))
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
       <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
       <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
 
@@ -68,10 +62,34 @@ export default function LoginPage() {
 
         {pageState == "login" && (
           <form action={loginAction} className="mt-8 space-y-6">
+            {loginState?.errors && !clearErrors && (
+              <Alert variant="destructive" className="border-red-500 bg-red-100 text-red-500">
+                <OctagonAlert color="#ef4444" className="h-5 w-5 text-red-500" />
+                <AlertDescription>
+                  {typeof loginState.errors === "string" ? (
+                    <div className="text-sm">{loginState.errors}</div>
+                  ) : (
+                    Object.entries(loginState.errors).map(([key, value]) => (
+                      <div key={key} className="text-sm">
+                        <strong>{key}:</strong>
+                        <ul className="">
+                          {String(value.errors ?? "")
+                            .split(",")
+                            .map((error, index) => (
+                              <li key={index}>{error}</li>
+                            ))}
+                        </ul>
+                      </div>
+                    ))
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
             <div className="space-y-4 rounded-md">
               <div>
                 <Input
                   type="email"
+                  name="email"
                   required
                   className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                   placeholder="Email address"
@@ -79,15 +97,23 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value.trim())}
                 />
               </div>
-              <div>
+              <div className="relative">
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
                   required
                   className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value.trim())}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
@@ -161,16 +187,22 @@ export default function LoginPage() {
         )}
         {pageState == "forgot-password" && (
           <form action={forgotPasswordAction} className="mt-8 space-y-6">
-            {forgotPasswordState.status == "error" && (
+            {forgotPasswordState.status == "error" && !clearErrors && (
               <FormErrorDisplay message="An error occurred. Please try again." />
             )}
-            {forgotPasswordState.status == "invalid_email" && (
+            {forgotPasswordState.status == "invalid_email" && !clearErrors && (
               <FormErrorDisplay message="Please enter a valid email address." />
+            )}
+            {forgotPasswordState.status == "success" && (
+              <Alert className="border-green-500 bg-green-100 text-green-500">
+                Password reset link sent successfully!
+              </Alert>
             )}
             <div className="space-y-4 rounded-md">
               <div>
                 <Input
                   type="email"
+                  name="email"
                   required
                   className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
                   placeholder="Email address"
@@ -179,9 +211,12 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <button className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50">
+              <Button
+                disabled={forgotPasswordPending}
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+              >
                 {forgotPasswordPending ? "Sending..." : "Send Reset Link"}
-              </button>
+              </Button>
             </div>
           </form>
         )}

@@ -5,9 +5,16 @@ import { loginFormSchema, signUpFormSchema } from "@/lib/definitions";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import logger from "@/lib/serverLogger";
-import { ForgotPasswordActionState, ResetPasswordActionState } from "@/lib/types/types";
+import {
+  ForgotPasswordActionState,
+  LoginActionState,
+  ResetPasswordActionState,
+} from "@/lib/types/types";
 
-export async function handleEmailLogin(prev: unknown, formData: FormData) {
+export async function handleEmailLogin(
+  _: LoginActionState,
+  formData: FormData
+): Promise<LoginActionState> {
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -18,11 +25,11 @@ export async function handleEmailLogin(prev: unknown, formData: FormData) {
 
   if (!validatedFields.success) {
     logger.error("Validation errors:", validatedFields.error.flatten());
-    return { errors: z.treeifyError(validatedFields.error).properties };
+    return { status: "error", errors: z.treeifyError(validatedFields.error).properties };
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/login`, {
+    const res = await fetch(`${process.env.BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,15 +42,32 @@ export async function handleEmailLogin(prev: unknown, formData: FormData) {
     }
 
     const responseData = await res.json();
-    createCookie("token", responseData.token, { httpOnly: true, path: "/" });
-    createCookie("user", JSON.stringify({ ...responseData.user }), {
-      httpOnly: false,
-      path: "/",
+    logger.info("user signed in successfully", responseData);
+    (await cookies()).set({
+      name: "token",
+      value: responseData.token,
+      httpOnly: true,
+      expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
     });
+
+    (await cookies()).set({
+      name: "user",
+      value: JSON.stringify({ ...responseData.user }),
+      httpOnly: true,
+      expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+    return { status: "success" };
   } catch (error) {
     logger.error("Error during login:", error);
+    return {
+      status: "error",
+      message: "message" in (error as Error) ? (error as Error).message : "Unable to Log In",
+    };
   }
-  redirect("/dashboard");
 }
 
 export async function handleRegister(prev: unknown, formData: FormData) {
@@ -65,7 +89,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/signup`, {
+    const res = await fetch(`${process.env.BASE_URL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,15 +102,29 @@ export async function handleRegister(prev: unknown, formData: FormData) {
     }
 
     const responseData = await res.json();
-    createCookie("token", responseData.token, { httpOnly: true, path: "/" });
-    createCookie("user", JSON.stringify({ ...responseData.user }), {
-      httpOnly: false,
-      path: "/",
+    logger.info("User registered successfully:", responseData);
+    (await cookies()).set({
+      name: "user",
+      value: JSON.stringify({ ...responseData.user }),
+      httpOnly: true,
+      expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
     });
-  } catch (error) {
-    logger.error("Error during login:", error);
+  } catch (error: unknown) {
+    logger.error("Error during Signup:", error);
+    return {
+      status: "error",
+      message: "message" in (error as Error) ? (error as Error).message : "Unable to Signup",
+    };
   }
-  redirect("/dashboard");
+  redirect("/auth/login");
+}
+
+export async function handleLogout() {
+  (await cookies()).delete("token");
+  (await cookies()).delete("user");
+  redirect("/auth/login");
 }
 
 export async function handleProviderLogin(_provider: string) {}
@@ -95,16 +133,20 @@ export async function getSession() {
   try {
     const user = (await cookies()).get("user")?.value;
 
-    if (!user) redirect("/auth");
+    if (!user) redirect("/auth/login");
 
     const userInfo = JSON.parse(user);
     return userInfo;
   } catch (_error) {
-    redirect("/auth");
+    redirect("/auth/login");
   }
 }
 
-export async function handlePasswordReset(_: ResetPasswordActionState, formData: FormData): Promise<ResetPasswordActionState> {
+export async function handlePasswordReset(
+  token: string,
+  _: ResetPasswordActionState,
+  formData: FormData
+): Promise<ResetPasswordActionState> {
   const password = formData.get("password");
   const confirmPassword = formData.get("confirmPassword");
 
@@ -113,7 +155,7 @@ export async function handlePasswordReset(_: ResetPasswordActionState, formData:
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/reset-password`, {
+    const res = await fetch(`${process.env.BASE_URL}/auth/reset-password?token=${token}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -134,10 +176,15 @@ export async function handlePasswordReset(_: ResetPasswordActionState, formData:
   }
 }
 
-export async function handleForgotPassword(_: ForgotPasswordActionState, formData: FormData): Promise<ForgotPasswordActionState> {
-  const validatedFields = z.object({
-    email: z.email(),
-  }).safeParse({ email: formData.get("email") });
+export async function handleForgotPassword(
+  _: ForgotPasswordActionState,
+  formData: FormData
+): Promise<ForgotPasswordActionState> {
+  const validatedFields = z
+    .object({
+      email: z.email(),
+    })
+    .safeParse({ email: formData.get("email") });
 
   if (!validatedFields.success) {
     logger.error("Validation errors:", validatedFields.error.flatten());
@@ -145,7 +192,7 @@ export async function handleForgotPassword(_: ForgotPasswordActionState, formDat
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/forgot-password`, {
+    const res = await fetch(`${process.env.BASE_URL}/auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -166,17 +213,3 @@ export async function handleForgotPassword(_: ForgotPasswordActionState, formDat
   }
 }
 
-async function createCookie(
-  name: string,
-  value: string,
-  options: { httpOnly?: boolean; path?: string } = {}
-) {
-  (await cookies()).set({
-    name,
-    value: value,
-    httpOnly: options.httpOnly || false,
-    expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-  });
-}
