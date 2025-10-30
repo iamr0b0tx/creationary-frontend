@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useState } from "react";
+import { Suspense, useActionState, useEffect, useState } from "react";
 
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { ResetPasswordActionState } from "@/lib/types/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import FormErrorDisplay from "@/components/ui/form-error-display";
 
-export default function LoginPage() {
+function ResetPasswordComponent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const searchParams = useSearchParams();
@@ -78,5 +78,43 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+function ResetPasswordSkeleton() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
+      <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
+
+      <div className="w-full max-w-md space-y-8 rounded-xl px-4 py-3 backdrop-blur-md">
+        <div>
+          <div className="mx-auto mt-6 h-8 w-48 animate-pulse rounded-md bg-white/20"></div>
+        </div>
+
+        <div className="mt-8 space-y-6">
+          <div className="space-y-4 rounded-md">
+            <div>
+              <div className="h-10 w-full animate-pulse rounded-md bg-gray-200/50"></div>
+            </div>
+            <div>
+              <div className="h-10 w-full animate-pulse rounded-md bg-gray-200/50"></div>
+            </div>
+          </div>
+
+          <div>
+            <div className="h-10 w-full animate-pulse rounded-md bg-indigo-600/50"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordSkeleton />}>
+      <ResetPasswordComponent />
+    </Suspense>
   );
 }
