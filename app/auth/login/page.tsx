@@ -3,159 +3,240 @@ import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { handleEmailLogin } from "@/app/action/auth";
+import { handleEmailLogin, handleForgotPassword } from "@/app/action/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { OctagonAlert } from "lucide-react";
+import { Eye, EyeOff, OctagonAlert } from "lucide-react";
+import FormErrorDisplay from "@/components/ui/form-error-display";
+import { ForgotPasswordActionState, LoginActionState } from "@/lib/types/types";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [loginState, loginAction, loginPending] = useActionState(handleEmailLogin, undefined);
+  const [loginState, loginAction, loginPending] = useActionState<LoginActionState, FormData>(
+    handleEmailLogin,
+    { status: "no_action", message: "" }
+  );
+  const [forgotPasswordState, forgotPasswordAction, forgotPasswordPending] = useActionState<
+    ForgotPasswordActionState,
+    FormData
+  >(handleForgotPassword, { status: "no_action" });
   const [clearErrors, setClearErrors] = useState(false);
+  const [pageState, setPageState] = useState<"login" | "forgot-password">("login");
+
+  const router = useRouter();
 
   useEffect(() => {
     setClearErrors(false);
     setTimeout(() => {
-      if (loginState?.errors) {
+      if (
+        loginState?.errors ||
+        forgotPasswordState.status == "error" ||
+        forgotPasswordState.status == "invalid_email"
+      ) {
         setClearErrors(true);
       }
     }, 10000);
-  }, [loginState?.errors]);
+  }, [loginState?.errors, forgotPasswordState.status]);
+
+  useEffect(() => {
+    if (loginState.status == "success") router.push("/explore");
+    if (forgotPasswordState.status == "success") router.push("/auth/reset-password");
+    // eslint-disable-next-line
+  }, [loginState.status]);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      {loginState?.errors && !clearErrors && (
-        <Alert variant="destructive" className="border-red-500 bg-red-100 text-red-500">
-          <OctagonAlert color="#ef4444" className="h-5 w-5 text-red-500" />
-          <AlertDescription>
-            {typeof loginState.errors === "string" ? (
-              <div className="text-sm">{loginState.errors}</div>
-            ) : (
-              Object.entries(loginState.errors).map(([key, value]) => (
-                <div key={key} className="text-sm">
-                  <strong>{key}:</strong>
-                  <ul className="">
-                    {String(value.errors)
-                      .split(",")
-                      .map((error, index) => (
-                        <li key={index}>{error}</li>
-                      ))}
-                  </ul>
-                </div>
-              ))
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
       <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
       <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
 
       <div className="w-full max-w-md space-y-8 rounded-xl px-4 py-3 backdrop-blur-md">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Sign in to your account
+          <h2 className="mt-6 text-center text-2xl font-extrabold text-white">
+            {pageState == "login" ? "Sign in to your account" : "Reset your password"}
           </h2>
         </div>
 
-        <form action={loginAction} className="mt-8 space-y-6">
-          <div className="space-y-4 rounded-md">
-            <div>
-              <Input
-                type="email"
-                required
-                className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value.trim())}
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                required
-                className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value.trim())}
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loginPending}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
-            >
-              {loginPending ? "Signing in..." : "Sign in"}
-            </button>
-          </div>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+        {pageState == "login" && (
+          <form action={loginAction} className="mt-8 space-y-6">
+            {loginState?.errors && !clearErrors && (
+              <Alert variant="destructive" className="border-red-500 bg-red-100 text-red-500">
+                <OctagonAlert color="#ef4444" className="h-5 w-5 text-red-500" />
+                <AlertDescription>
+                  {typeof loginState.errors === "string" ? (
+                    <div className="text-sm">{loginState.errors}</div>
+                  ) : (
+                    Object.entries(loginState.errors).map(([key, value]) => (
+                      <div key={key} className="text-sm">
+                        <strong>{key}:</strong>
+                        <ul className="">
+                          {String(value.errors ?? "")
+                            .split(",")
+                            .map((error, index) => (
+                              <li key={index}>{error}</li>
+                            ))}
+                        </ul>
+                      </div>
+                    ))
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="space-y-4 rounded-md">
+              <div>
+                <Input
+                  type="email"
+                  name="email"
+                  required
+                  className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-gray-50 px-2 text-gray-500">Or</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button
-                // onClick={() => handleProviderLogin("google")}
-                formAction={() => {}}
-                className="inline-flex w-full justify-center rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-100"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  x="0px"
-                  y="0px"
-                  width="100"
-                  height="100"
-                  className="h-5 w-5"
-                  viewBox="0 0 48 48"
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform"
                 >
-                  <path
-                    fill="#FFC107"
-                    d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                  ></path>
-                  <path
-                    fill="#FF3D00"
-                    d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                  ></path>
-                  <path
-                    fill="#4CAF50"
-                    d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                  ></path>
-                  <path
-                    fill="#1976D2"
-                    d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                  ></path>
-                </svg>
-                <span className="ml-2">Google</span>
-              </button>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
+            <div>
               <button
-                formAction={() => {}}
-                className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-600 hover:to-pink-600"
+                type="submit"
+                disabled={loginPending}
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
               >
-                <InstagramLogo />
-                <span className="ml-2">Instagram</span>
+                {loginPending ? "Signing in..." : "Sign in"}
               </button>
             </div>
-            <div className="py-3 text-center text-sm text-white">
-              Don&apos;t have an account yet?{" "}
-              <Link
-                className="text-xs text-indigo-600 hover:text-indigo-500 hover:underline"
-                href="/auth/signup"
-              >
-                Sign Up here
-              </Link>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-gray-50 px-2 text-gray-500">Or</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <Button
+                  disabled={true}
+                  // onClick={() => handleProviderLogin("google")}
+                  formAction={() => {}}
+                  className="inline-flex w-full justify-center rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-100 disabled:opacity-40"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    x="0px"
+                    y="0px"
+                    width="100"
+                    height="100"
+                    className="h-5 w-5"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      fill="#FFC107"
+                      d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+                    ></path>
+                    <path
+                      fill="#FF3D00"
+                      d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+                    ></path>
+                    <path
+                      fill="#4CAF50"
+                      d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+                    ></path>
+                    <path
+                      fill="#1976D2"
+                      d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+                    ></path>
+                  </svg>
+                  <span className="ml-2">Google</span>
+                </Button>
+
+                <Button
+                  disabled={true}
+                  formAction={() => {}}
+                  className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-purple-600 hover:to-pink-600 disabled:opacity-40"
+                >
+                  <InstagramLogo />
+                  <span className="ml-2">Instagram</span>
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        )}
+        {pageState == "forgot-password" && (
+          <form action={forgotPasswordAction} className="mt-8 space-y-6">
+            {forgotPasswordState.status == "error" && !clearErrors && (
+              <FormErrorDisplay message="An error occurred. Please try again." />
+            )}
+            {forgotPasswordState.status == "invalid_email" && !clearErrors && (
+              <FormErrorDisplay message="Please enter a valid email address." />
+            )}
+            {forgotPasswordState.status == "success" && (
+              <Alert className="border-green-500 bg-green-100 text-green-500">
+                Password reset link sent successfully!
+              </Alert>
+            )}
+            <div className="space-y-4 rounded-md">
+              <div>
+                <Input
+                  type="email"
+                  name="email"
+                  required
+                  className="relative block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                  placeholder="Email address"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Button
+                disabled={forgotPasswordPending}
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+              >
+                {forgotPasswordPending ? "Sending..." : "Send Reset Link"}
+              </Button>
+            </div>
+          </form>
+        )}
+        <div className="flex justify-between py-2">
+          <span
+            role="button"
+            className={`cursor-pointer text-xs text-indigo-200 underline hover:text-indigo-500`}
+            onClick={() =>
+              setPageState((c) => (c == "forgot-password" ? "login" : "forgot-password"))
+            }
+          >
+            {pageState === "forgot-password" ? "Back to Login?" : "Forgot Password?"}
+          </span>
+          <Link
+            className="text-xs text-indigo-200 underline hover:text-indigo-500"
+            href="/auth/signup"
+          >
+            Don&apos;t have an account yet?
+          </Link>
+        </div>
       </div>
     </div>
   );

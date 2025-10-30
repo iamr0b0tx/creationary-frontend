@@ -7,21 +7,26 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Heart, Eye, Lock, Play, Star } from "lucide-react";
+import { Search, Filter, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
-import { categories, contentData, TCategory } from "@/lib/data/exploreContent";
+import { categories, contentData } from "@/lib/data/exploreContent";
 import { PaginationWrapper } from "@/components/wrappers/paginationWrapper";
+import { TCategory } from "@/lib/types/types";
 
 const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
 
-export default function ExplorePageComponent({ initialContent }: { initialContent: typeof contentData }) {
+export default function ExplorePageComponent({
+  initialContent,
+}: {
+  initialContent: typeof contentData;
+}) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
@@ -29,12 +34,12 @@ export default function ExplorePageComponent({ initialContent }: { initialConten
     // Backend will handle content search
   };
 
-  const handleLikeContent = async (contentId: number) => {
+  const _handleLikeContent = async (contentId: number) => {
     logger.info(`Simulated API call: POST /api/content/${contentId}/like`);
     // Backend will handle like functionality
   };
 
-  const handlePurchaseContent = async (contentId: number) => {
+  const _handlePurchaseContent = async (contentId: number) => {
     // Redirect to checkout page with product ID
     router.push(`/checkout?product=${contentId}`);
   };
@@ -181,7 +186,7 @@ export default function ExplorePageComponent({ initialContent }: { initialConten
                   <Badge variant="secondary">{content.category}</Badge>
                 </div>
                 <div className="absolute top-2 right-2 flex gap-1">
-                  {content.isPremium && (
+                  {!content.isFree && (
                     <Badge
                       variant="secondary"
                       className="bg-black/70 text-white"
@@ -230,7 +235,7 @@ export default function ExplorePageComponent({ initialContent }: { initialConten
                       </AvatarFallback>
                     </Avatar>
                     <Link
-                      href={`/user/${content.creator.username}`}
+                      href={`/creator/${content.creator.username}`}
                       className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                     >
                       {content.creator.name}

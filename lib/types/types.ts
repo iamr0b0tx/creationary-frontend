@@ -1,0 +1,49 @@
+export type ResetPasswordActionState = {
+  status: "no_action" | "pending" | "success" | "error" | "password_mismatch";
+};
+
+export type ForgotPasswordActionState = {
+  status: "no_action" | "pending" | "success" | "error" | "invalid_email";
+};
+export type LoginActionState = {
+  errors?: string | Record<string, { errors: string[] }>;
+  status: "no_action" | "pending" | "success" | "error" | "invalid_email";
+  message?: string;
+};
+
+export type TCategory =
+  | "Photography"
+  | "Music"
+  | "Fitness"
+  | "Cooking"
+  | "Art"
+  | "Business"
+  | "Technology"
+  | "All";
+
+export type TContentItem = {
+  id: string; // corresponds to MongoDB _id
+  title: string;
+  content: string;
+  author: string; // ObjectId reference to User
+  isFree: boolean;
+  thumbnail?: string;
+  category: TCategory;
+  price: number;
+  originalPrice: number | null;
+  rating: number;
+  reviews: number;
+  views: number;
+  likes: number;
+  duration?: string;
+  description?: string;
+  features: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TUser = {
+  email: string;
+  lastName: string;
+  firstName: string;
+};

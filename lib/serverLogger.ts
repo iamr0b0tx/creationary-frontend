@@ -4,14 +4,6 @@ import { format } from "logform";
 const logLevel = process.env.LOG_LEVEL || "silly";
 const fileLog = process.env.LOG_TO_FILENAME || false;
 
-type TLogger =
-  | ReturnType<typeof createLogger>
-  | {
-      info: (message: string, ...args: unknown[]) => void;
-      error: (message: string, ...args: unknown[]) => void;
-      warn: (message: string, ...args: unknown[]) => void;
-      debug: (message: string, ...args: unknown[]) => void;
-    };
 
 let appFormat = format.json();
 
