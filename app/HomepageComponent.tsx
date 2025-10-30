@@ -168,7 +168,7 @@ export default function HomePageComponent({ user }: { user: TUser | null }) {
                     alt={content.title}
                     className="img"
                   />
-                  {content.isFree && (
+                  {!content.isFree && (
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="bg-black/70 text-white">
                         <Lock className="mr-1 h-3 w-3" />

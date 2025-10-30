@@ -186,7 +186,7 @@ export default function ExplorePageComponent({
                   <Badge variant="secondary">{content.category}</Badge>
                 </div>
                 <div className="absolute top-2 right-2 flex gap-1">
-                  {content.isFree && (
+                  {!content.isFree && (
                     <Badge
                       variant="secondary"
                       className="bg-black/70 text-white"
