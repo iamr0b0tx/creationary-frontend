@@ -32,6 +32,12 @@ export type TContentItem = {
   title: string;
   content: string;
   author: string; // ObjectId reference to User
+  creator: {
+    name: string;
+    username: string;
+    avatar: string;
+    verified: boolean;
+  };
   isFree: boolean;
   thumbnail?: string;
   category: TCategory;
@@ -64,4 +70,11 @@ export type Tcontent = {
   originalPrice: string;
   price: string;
   estimatedDuration: string;
+};
+
+export type TPagination = {
+  totalPosts: number;
+  currentPage: number;
+  totalPages: number;
+  limits: number;
 };
