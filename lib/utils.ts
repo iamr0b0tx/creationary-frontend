@@ -16,7 +16,7 @@ export function objectToFormData(obj: Record<string, unknown>) {
       if (typeof value === "object" && value !== null && !(value instanceof File)) {
         formData.append(key, JSON.stringify(value));
       } else {
-        formData.append(key, value as string | Blob);
+        formData.append(key, value instanceof Blob ? value : String(value));
       }
     }
   }
