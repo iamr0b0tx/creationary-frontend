@@ -17,7 +17,6 @@ import {
   FileText,
   Check,
   AlertCircle,
-  DollarSign,
   Camera,
   Mic,
   Film,
@@ -123,16 +122,6 @@ export default function UploadContentPage() {
     }));
   };
 
-  // const handleSubmit = async () => {
-  //   setIsUploading(true);
-  //   // Simulate API call
-  //   await new Promise((resolve) => setTimeout(resolve, 2000));
-  //   setIsUploading(false);
-
-  //   // Redirect to creator dashboard
-  //   router.push("/creator/dashboard?success=content-uploaded");
-  // };
-
   useEffect(() => {
     if (postState.status === "success") {
       setIsSuccessModalOpen(true);
@@ -155,7 +144,7 @@ export default function UploadContentPage() {
     "Review & Publish",
   ];
 
-  const progress = (currentStep / stepTitles.length) * 100;
+  const progress = ((currentStep + 1) / stepTitles.length) * 100;
 
   return (
     <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
@@ -171,7 +160,7 @@ export default function UploadContentPage() {
             <div>
               <h1 className="font-semibold">Upload Content</h1>
               <p className="text-muted-foreground text-sm">
-                Step {currentStep} of {stepTitles.length}: {stepTitles[currentStep - 1]}
+                Step {currentStep} of {stepTitles.length}: {stepTitles[currentStep]}
               </p>
             </div>
           </div>
@@ -323,11 +312,6 @@ export default function UploadContentPage() {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                    {/* {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))} */}
                   </Select>
                 </div>
 
@@ -349,7 +333,7 @@ export default function UploadContentPage() {
                     placeholder="Add tags (press Enter)"
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
                   <Button onClick={addTag} type="button">
                     <Plus className="h-4 w-4" />
@@ -383,7 +367,9 @@ export default function UploadContentPage() {
                 <div>
                   <label className="mb-2 block text-sm font-medium">Original Price (NGN)</label>
                   <div className="relative">
-                    <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                    <span className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-[75%] transform">
+                      ₦
+                    </span>
                     <Input
                       type="number"
                       name="originalPrice"
@@ -401,7 +387,9 @@ export default function UploadContentPage() {
                 <div>
                   <label className="mb-2 block text-sm font-medium"> Price (NGN)</label>
                   <div className="relative">
-                    <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                    <span className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-[75%] transform">
+                      ₦
+                    </span>
                     <Input
                       type="number"
                       name="price"
@@ -474,12 +462,6 @@ export default function UploadContentPage() {
                       {contentData.estimatedDuration || "Not specified"}
                     </p>
                   </div>
-                  {/* <div>
-                    <span className="font-medium">Files:</span>
-                    <p className="text-muted-foreground">
-                      {files.filter((f) => f.status === "completed").length} uploaded
-                    </p>
-                  </div> */}
                 </div>
 
                 {contentData.tags.length > 0 && (
@@ -505,11 +487,6 @@ export default function UploadContentPage() {
                   { label: "Category selected", completed: !!contentData.category },
                   { label: "Content body added", completed: !!contentData.content },
                   { label: "Price set", completed: contentData.price !== "" },
-                  //   {
-                  //     label: "Files uploaded",
-                  //     completed: files.some((f) => f.status === "completed"),
-                  //   },
-                  // { label: "Thumbnail uploaded", completed: !!contentData.thumbnail },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     {item.completed ? (
@@ -534,8 +511,8 @@ export default function UploadContentPage() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-            disabled={currentStep === 1}
+            onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+            disabled={currentStep === 0}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Previous
@@ -546,8 +523,13 @@ export default function UploadContentPage() {
               type="button"
               onClick={() => setCurrentStep((prev) => Math.min(stepTitles.length, prev + 1))}
               disabled={
-                currentStep === 1 && !contentData.type
-                // || (currentStep === 2 && files.filter((f) => f.status === "completed").length === 0)
+                (currentStep === TSteps.CONTENT_TYPE && !contentData.type) ||
+                (currentStep === TSteps.CONTENT_DETAILS &&
+                  (!contentData.title ||
+                    !contentData.description ||
+                    !contentData.content ||
+                    !contentData.category)) ||
+                (currentStep === TSteps.PRICING_AND_SETTINGS && !contentData.price)
               }
             >
               Next
