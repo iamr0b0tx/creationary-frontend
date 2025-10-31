@@ -35,8 +35,6 @@ export default async function ExplorePage() {
     }));
   };
 
-
-
   const content = rawContent ? transformContent(rawContent) : null;
   // use content if fetched successfully, otherwise fallback to static contentData
   return <ExplorePageComponent initialContent={content ?? contentData} />;
