@@ -21,7 +21,6 @@ const getContentData = async (userToken: string) => {
     });
 
     if (!response.ok) {
-      console.log("Failed to fetch content data:", response.statusText, response);
       throw new Error("Failed to fetch content");
     }
     const content = await response.json();

@@ -15,8 +15,7 @@ export const createPost = async (
 
   try {
     const token = (await cookies()).get("token")?.value;
-    logger.info("Creating new post with tags:", tags);
-    logger.info("FormData entries:", JSON.stringify(Object.fromEntries(data.entries())));
+   
     const validatedFields = postSchema.safeParse({
       title: data.get("title"),
       content: data.get("content"),
@@ -36,21 +35,40 @@ export const createPost = async (
       };
     }
 
-    console.log("Validated post fields:", JSON.stringify(validatedFields.data));
+    // Build headers with correct content type and optional auth
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json", 
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
     const response = await fetch(`${process.env.BASE_URL}/posts`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token ?? ""}`,
-        ContentType: "application/json",
-      },
+      headers,
       body: JSON.stringify(validatedFields.data),
     });
 
     if (!response.ok) {
-      const res = await response.text();
-      logger.error("Failed to upload content:", res);
-      throw new Error(JSON.parse(res).message ?? "Failed to upload content");
+      let message = `Failed to upload content (status ${response.status})`;
+      try {
+        const maybeJson = await response.json();
+        if (maybeJson && typeof maybeJson === "object" && "message" in maybeJson) {
+          message = (maybeJson as { message?: string }).message || message;
+        } else {
+          message = JSON.stringify(maybeJson);
+        }
+      } catch {
+        // Fallback to text if not JSON
+        try {
+          message = await response.text();
+        } catch {
+          // ignore
+        }
+      }
+      logger.error("Failed to upload content:", message);
+      throw new Error(message);
     }
 
     await response.json();

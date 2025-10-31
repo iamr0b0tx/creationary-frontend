@@ -135,11 +135,14 @@ export default function UploadContentPage() {
 
   useEffect(() => {
     if (postState.status === "success") {
-      router.push("/creator/dashboard?success=content-uploaded");
+      setIsSuccessModalOpen(true);
+      setTimeout(() => {
+        router.push("/explore");
+        setIsSuccessModalOpen(false);
+      }, 4000);
     }
     if (postState.status === "error") {
       alert(postState.message || "An error occurred while uploading content.");
-      // setIsSuccessModalOpen(true)
     }
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postState.status]);
@@ -631,7 +634,7 @@ const UploadSuccess = () => {
           />
         </g>
       </svg>
-      <p className="text-lg font-semibold text-center text-gray-700">
+      <p className="text-center text-lg font-semibold text-gray-700">
         Your post has been published successfully!
       </p>
       <p className="text-center">You will be redirected to the explore page shortly</p>

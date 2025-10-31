@@ -239,7 +239,6 @@
   }
 }
 
-
 .animate-card-morph {
   animation: cardMorph 1s ease-in-out forwards;
 }

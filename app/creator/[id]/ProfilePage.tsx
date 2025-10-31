@@ -357,7 +357,7 @@ export default function UserProfileContent({ id }: { id: number }) {
                         onClick={() => {
                           if (item.price === 0) {
                             // Handle free content viewing
-                            console.log("Play free content:", item.id);
+                            logger.info("Play free content:", item.id);
                           } else {
                             // Navigate to checkout
                             router.push(`/checkout?product=${item.id}`);
