@@ -26,9 +26,9 @@ const getContentData = async (userToken: string) => {
     }
     const content = await response.json();
     logger.info("Content data fetched successfully", content);
-    return content.data;
-  } catch (err) {
-    logger.error("Error fetching content data:", err);
+    return content.data.posts;
+  } catch (error: unknown) {
+    logger.error("Error fetching content data:", error);
   }
 };
 
