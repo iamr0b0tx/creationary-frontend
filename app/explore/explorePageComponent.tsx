@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,23 +10,30 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
-import { categories, contentData } from "@/lib/data/exploreContent";
+import { categories } from "@/lib/data/exploreContent";
 import { PaginationWrapper } from "@/components/wrappers/paginationWrapper";
-import { TCategory } from "@/lib/types/types";
+import { TCategory, TContentItem, TPagination } from "@/lib/types/types";
 
-const ITEMS_PER_PAGE = 9;
+// const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
 
 export default function ExplorePageComponent({
   initialContent,
+  pagination,
 }: {
-  initialContent: typeof contentData;
+  initialContent: TContentItem[];
+  pagination: TPagination;
 }) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [visitedPages, setVisitedPages] = useState<Set<number>>(new Set());
+
+  // const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
@@ -43,6 +50,13 @@ export default function ExplorePageComponent({
     // Redirect to checkout page with product ID
     router.push(`/checkout?product=${contentId}`);
   };
+
+  useEffect(() => {
+    if(!visitedPages.has(pagination.currentPage)) {
+      setVisitedPages((visited) => visited.add(pagination.currentPage));
+    }
+    setCurrentPage(pagination.currentPage);
+  }, [])
 
   const filteredContent = initialContent.filter((content) => {
     const matchesCategory = selectedCategory === "All" || content.category === selectedCategory;
@@ -67,13 +81,24 @@ export default function ExplorePageComponent({
     ...filteredContent,
   ];
 
-  const start = currentPage * ITEMS_PER_PAGE - ITEMS_PER_PAGE;
-  const end = start + ITEMS_PER_PAGE;
+  // pagination: {
+  //         totalPosts,
+  //         currentPage: pageNumber,
+  //         totalPages,
+  //         limits: pageSize,
+  //       }
+  // ITEMS_PER_PAGE ==> pagination.limits
+  
+  const start = currentPage * pagination.limits - pagination.limits;
+  const end = start + pagination.limits;
   const paginatedContent = increasedContent.slice(start, end);
 
-  const totalPages = Math.ceil(increasedContent.length / ITEMS_PER_PAGE);
+  // const totalPages = Math.ceil(increasedContent.length / pagination.limits);
   const onPageChange = (page: number) => {
-    setCurrentPage(page);
+    if (!visitedPages.has(page)) {
+      setVisitedPages((visited) => visited.add(page));
+      router.replace(`${pathname}?page=${page}`);
+    } else setCurrentPage(page);
   };
 
   return (
@@ -153,75 +178,6 @@ export default function ExplorePageComponent({
               onMouseEnter={() => setHoveredCard(content.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              {/* Content Image Start */}
-              <div className="relative">
-                {/* <img
-                  src={content.thumbnail || "/placeholder.svg"}
-                  alt={content.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                /> */}
-
-                {/* Overlay on hover */}
-                {/* <div
-                  className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-300 ${
-                    hoveredCard === content.id ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <Button
-                    size="sm"
-                    className="animate-bounce-subtle"
-                    onClick={() =>
-                      content.price > 0
-                        ? handlePurchaseContent(content.id)
-                        : null
-                    }
-                  >
-                    <Play className="w-4 h-4 mr-2" />
-                    {content.price > 0 ? "Purchase" : "Watch Free"}
-                  </Button>
-                </div> */}
-
-                {/* Badges */}
-                {/* <div className="absolute top-2 left-2">
-                  <Badge variant="secondary">{content.category}</Badge>
-                </div>
-                <div className="absolute top-2 right-2 flex gap-1">
-                  {!content.isFree && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-black/70 text-white"
-                    >
-                      <Lock className="w-3 h-3 mr-1" />
-                      Premium
-                    </Badge>
-                  )}
-                  {content.originalPrice && (
-                    <Badge variant="destructive" className="bg-red-600">
-                      Sale
-                    </Badge>
-                  )}
-                </div> */}
-
-                {/* Stats */}
-                {/* <div className="absolute bottom-2 left-2 flex items-center space-x-3 text-white text-sm">
-                  <span className="flex items-center">
-                    <Eye className="w-3 h-3 mr-1" />
-                    {content.views.toLocaleString()}
-                  </span>
-                  <button
-                    className="flex items-center hover:text-red-400 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLikeContent(content.id);
-                    }}
-                  >
-                    <Heart className="w-3 h-3 mr-1" />
-                    {content.likes}
-                  </button>
-                </div> */}
-              </div>
-              {/* Content Image End */}
-
               <CardHeader className="h-full pb-3">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -281,17 +237,10 @@ export default function ExplorePageComponent({
             </Card>
           ))}
         </div>
-
-        {/* Load More */}
-        {/* <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
-            Load More Content
-          </Button>
-        </div> */}
         <PaginationWrapper
-          currentPage={currentPage}
+          currentPage={pagination.currentPage}
           onPageChange={onPageChange}
-          totalPages={totalPages}
+          totalPages={pagination.totalPages}
           maxVisiblePages={MAX_VISIBLE_PAGES}
           className="mt-10 justify-center"
         />

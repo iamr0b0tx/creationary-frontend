@@ -11,7 +11,18 @@ vi.mock("next/navigation", () => ({
     forward: vi.fn(),
     refresh: vi.fn(),
   }),
+  usePathname: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+  }),
+  useSearchParams: () => ({
+    get: vi.fn(),
+    has: vi.fn(),
+  }),
 }));
+
+const mockPagination = { totalPages: 0, currentPage: 0, limits: 0, totalPosts: 0 };
 
 // Clean up after each test to prevent duplicate elements
 afterEach(() => {
@@ -19,19 +30,21 @@ afterEach(() => {
 });
 
 test("Explore Page renders without crashing", () => {
-  const { container } = render(<ExplorePageComponent initialContent={[]} />);
+  const { container } = render(
+    <ExplorePageComponent pagination={mockPagination} initialContent={[]} />
+  );
   expect(container).toBeDefined();
   expect(screen.getByText("Discover amazing content from talented creators")).toBeDefined();
 });
 
 test("Explore Page has main heading", () => {
-  render(<ExplorePageComponent initialContent={[]} />);
+  render(<ExplorePageComponent pagination={mockPagination} initialContent={[]} />);
   const heading = screen.getByRole("heading", { name: /explore content/i });
   expect(heading.textContent).toBe("Explore Content");
 });
 
 test("Explore Page has search functionality", () => {
-  render(<ExplorePageComponent initialContent={[]} />);
+  render(<ExplorePageComponent pagination={mockPagination} initialContent={[]} />);
   const searchInput = screen.getByRole("textbox");
   expect(searchInput.getAttribute("placeholder")).toBe("Search content or creators...");
 });
