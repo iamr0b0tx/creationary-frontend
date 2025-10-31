@@ -27,3 +27,22 @@ export const loginFormSchema = z.object({
     })
     .trim(),
 });
+
+
+export const postSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters long").trim(),
+  description: z.string().min(10, "Description must be at least 10 characters long").trim(),
+  // isFree: z.boolean(),
+  // thumbnail: z.url("Thumbnail must be a valid URL").trim(),
+  content: z.string().min(20, "Content must be at least 20 characters long").trim(),
+  features: z.array(z.string()).min(1, "At least one feature is required"),
+  category: z.string().min(1, "Category is required").trim(),
+  price: z.number().min(0, "Price must be a positive number"),
+  originalPrice: z
+    .number()
+    .min(0, "Original price must be a positive number")
+    .optional()
+    .nullable(),
+  // duration: z.string().min(1, "Estimated duration is required").trim(),
+  // contentUrl: z.string().url("Content URL must be a valid URL").trim(),
+});
