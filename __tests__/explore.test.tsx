@@ -11,14 +11,13 @@ vi.mock("next/navigation", () => ({
     forward: vi.fn(),
     refresh: vi.fn(),
   }),
-  usePathname: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    back: vi.fn(),
-  }),
+  usePathname: () => "/explore",
   useSearchParams: () => ({
-    get: vi.fn(),
-    has: vi.fn(),
+    get: (param: string) => {
+      if (param === "page") return "1";
+      return null;
+    },
+    has: vi.fn().mockReturnValue(false),
   }),
 }));
 

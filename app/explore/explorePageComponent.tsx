@@ -29,7 +29,6 @@ export default function ExplorePageComponent({
   const [searchQuery, setSearchQuery] = useState("");
   const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-  // const searchParams = useSearchParams();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
