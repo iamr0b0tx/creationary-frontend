@@ -1,3 +1,4 @@
+import { baseUrl } from "../baseUrl";
 import { logger } from "../clientLogger";
 import { TCategory } from "../types/types";
 
@@ -14,21 +15,20 @@ const categories: TCategory[] = [
 
 const getContentData = async (userToken: string) => {
   try {
-    const response = await fetch(`${process.env.BASE_URL}/posts`, {
+    const response = await fetch(`${baseUrl}/posts`, {
       headers: {
         "Authorization": `Bearer ${userToken}`
       }
     });
 
     if (!response.ok) {
-      console.log("Failed to fetch content data:", response.statusText, response);
       throw new Error("Failed to fetch content");
     }
     const content = await response.json();
     logger.info("Content data fetched successfully", content);
-    return content.data;
-  } catch (err) {
-    logger.error("Error fetching content data:", err);
+    return content.data.posts;
+  } catch (error: unknown) {
+    logger.error("Error fetching content data:", error);
   }
 };
 

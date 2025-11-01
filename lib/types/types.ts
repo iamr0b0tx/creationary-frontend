@@ -11,6 +11,12 @@ export type LoginActionState = {
   message?: string;
 };
 
+export type PostActionState = {
+  errors?: string | Record<string, { errors: string[] }>;
+  status: "no_action" | "pending" | "success" | "error" | "invalid_email" | "validation_error";
+  message?: string;
+};
+
 export type TCategory =
   | "Photography"
   | "Music"
@@ -46,4 +52,16 @@ export type TUser = {
   email: string;
   lastName: string;
   firstName: string;
+};
+
+export type Tcontent = {
+  type: string;
+  title: string;
+  description: string;
+  content: string;
+  category: string;
+  tags: string[];
+  originalPrice: string;
+  price: string;
+  estimatedDuration: string;
 };
