@@ -52,22 +52,7 @@ export const createPost = async (
     });
 
     if (!response.ok) {
-      let message = `Failed to upload content (status ${response.status})`;
-      try {
-        const maybeJson = await response.json();
-        if (maybeJson && typeof maybeJson === "object" && "message" in maybeJson) {
-          message = (maybeJson as { message?: string }).message || message;
-        } else {
-          message = JSON.stringify(maybeJson);
-        }
-      } catch {
-        // Fallback to text if not JSON
-        try {
-          message = await response.text();
-        } catch {
-          // ignore
-        }
-      }
+      const { message } = await response.json();
       logger.error("Failed to upload content:", message);
       throw new Error(message);
     }
