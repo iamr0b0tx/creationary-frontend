@@ -13,7 +13,7 @@ import { logger } from "@/lib/clientLogger";
 import { categories } from "@/lib/data/exploreContent";
 import { PaginationWrapper } from "@/components/wrappers/paginationWrapper";
 import { TCategory, TContentItem, TPagination } from "@/lib/types/types";
-import { debounce } from "@/lib/utils";
+import { useDebounceCallback } from "@/lib/hooks/debounce";
 
 // const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
@@ -33,7 +33,7 @@ export default function ExplorePageComponent({
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
-  const handleSearch = debounce(async (query: string) => {
+  const handleSearch = useDebounceCallback(async (query: string) => {
     const params = new URLSearchParams(searchParams);
     if (query.trim()) {
       params.set("query", query);
@@ -43,7 +43,7 @@ export default function ExplorePageComponent({
       params.set("page", "1"); // Reset to first page if search is cleared
     }
     router.replace(`${pathname}?${params.toString()}`);
-  });
+  }, 400);
 
   const _handleLikeContent = async (contentId: number) => {
     logger.info(`Simulated API call: POST /api/content/${contentId}/like`);
@@ -104,7 +104,7 @@ export default function ExplorePageComponent({
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Search content or creators..."
-                defaultValue={searchParams.get("query")?.toString()}
+                defaultValue={searchParams.get("query") ?? ""}
                 onChange={(e) => {
                   handleSearch(e.target.value);
                 }}

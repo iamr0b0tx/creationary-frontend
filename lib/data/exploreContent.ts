@@ -14,8 +14,9 @@ const categories: TCategory[] = [
 ];
 
 const getContentData = async (userToken: string, page: string, query: string) => {
+  const params = new URLSearchParams({page, search: query})
   try {
-    const response = await fetch(`${baseUrl}/posts?page=${page}&search=${query}`, {
+    const response = await fetch(`${baseUrl}/posts?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${userToken}`,
       },
