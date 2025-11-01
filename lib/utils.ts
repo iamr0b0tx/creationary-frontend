@@ -22,3 +22,16 @@ export function objectToFormData(obj: Record<string, unknown>) {
   }
   return formData;
 }
+
+export function debounce<T extends unknown[]>(
+  func: (...args: T) => Promise<void> | void,
+  timeout = 300
+): (...args: T) => void {
+  let timer: NodeJS.Timeout;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, timeout);
+  };
+}
