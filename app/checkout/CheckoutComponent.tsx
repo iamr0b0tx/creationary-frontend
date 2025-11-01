@@ -1,23 +1,28 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { currency } from "@/lib/utils/currency";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Play, ArrowLeft, Shield, Star, CheckCircle, Gift } from "lucide-react";
-import { getProductById, TContentItem } from "@/lib/data/exploreContent";
+import {
+  Play,
+  ArrowLeft,
+  Shield,
+  Star,
+  CheckCircle,
+  Gift,
+  ArrowUp,
+  Loader2,
+} from "lucide-react";
 import { posthog } from "posthog-js";
 import { toast } from "sonner";
+import Modal from "@/components/modal";
+import { TComment, TContentItem, TPriceCardProps } from "@/lib/types/types";
+import { addComment } from "../action/post";
 
 export type ReferenceObj = {
   message: string;
@@ -28,12 +33,15 @@ export type ReferenceObj = {
   trxref: string;
 };
 
-function CheckoutComponent() {
+export default function CheckoutComponent({
+  product,
+  comments,
+}: {
+  product: TContentItem | null;
+  comments: TComment | null;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const productId = searchParams.get("product");
 
-  const [product, setProduct] = useState<TContentItem | null>(null);
   const [success, setSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,24 +50,20 @@ function CheckoutComponent() {
     lastName: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentlySelectedPlan, setCurrentlySelectedPlan] =
-    useState<string>("Lifetime");
+  const [currentlySelectedPlan, setCurrentlySelectedPlan] = useState<string>("Lifetime");
+  const [commentText, setCommentText] = useState("");
 
-  useEffect(() => {
-    if (productId || !isProcessing) {
-      if (!productId) setProduct(null);
-      else {
-        const productData = getProductById(productId);
-        setProduct(productData);
-      }
-    } else {
-      router.push("/explore");
-    }
-  }, [productId, router, isProcessing]);
+  const [pending, startTransition] = useTransition();
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const addCommentAction = () => {
+    startTransition(async () => {
+      await addComment(product?._id ?? "", commentText);
+      setCommentText("");
+      router.refresh();
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -150,8 +154,8 @@ function CheckoutComponent() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
       </div>
     );
   }
@@ -161,34 +165,32 @@ function CheckoutComponent() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Play className="w-4 h-4 text-primary-foreground" />
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Play className="text-primary-foreground h-4 w-4" />
             </div>
             <span className="text-xl font-bold">Creationary</span>
           </Link>
 
           <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-green-600" />
-            <span className="text-sm text-muted-foreground">
-              Secure Checkout
-            </span>
+            <Shield className="h-4 w-4 text-green-600" />
+            <span className="text-muted-foreground text-sm">Secure Checkout</span>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         {/* Back button */}
         <Button variant="ghost" className="mb-6" onClick={() => router.back()}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Order Summary */}
           <div className="order-2 lg:order-1">
             <Card>
@@ -196,19 +198,17 @@ function CheckoutComponent() {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-4 mb-6">
+                <div className="mb-6 flex gap-4">
                   <img
                     // src={product.thumbnail}
                     src="/default_image.png"
                     alt={product.title}
-                    className="w-20 h-20 object-cover rounded-lg"
+                    className="h-20 w-20 rounded-lg object-cover"
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold line-clamp-2">
-                      {product.title}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Avatar className="w-4 h-4">
+                    <h3 className="line-clamp-2 font-semibold">{product.title}</h3>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Avatar className="h-4 w-4">
                         <AvatarImage src={product.creator.avatar} />
                         <AvatarFallback className="text-xs">
                           {product.creator.name
@@ -217,42 +217,34 @@ function CheckoutComponent() {
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm text-muted-foreground">
-                        {product.creator.name}
-                      </span>
+                      <span className="text-muted-foreground text-sm">{product.creator.name}</span>
                       {product.creator.verified && (
-                        <CheckCircle className="w-3 h-3 text-blue-500" />
+                        <CheckCircle className="h-3 w-3 text-blue-500" />
                       )}
                     </div>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <div className="mt-1 flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                       <span className="text-xs">{product.rating}</span>
-                      <span className="text-xs text-muted-foreground">
-                        ({product.reviews})
-                      </span>
+                      <span className="text-muted-foreground text-xs">({product.reviews})</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-6">
+                <div className="mb-6 space-y-3">
                   <h4 className="font-medium">What&apos;s included:</h4>
                   {product.features.map((feature: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <CheckCircle className="h-4 w-4 text-green-500" />
                       <span className="text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t pt-4 space-y-2">
+                <div className="space-y-2 border-t pt-4">
                   <div className="flex justify-between">
                     <span>Course price:</span>
                     <span
-                      className={
-                        product.originalPrice
-                          ? "line-through text-muted-foreground"
-                          : ""
-                      }
+                      className={product.originalPrice ? "text-muted-foreground line-through" : ""}
                     >
                       ₦{product.originalPrice || product.price}
                     </span>
@@ -263,14 +255,14 @@ function CheckoutComponent() {
                         <span>Discount:</span>
                         <span>-₦{savings}</span>
                       </div>
-                      <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                      <div className="flex justify-between border-t pt-2 text-lg font-semibold">
                         <span>Total:</span>
                         <span>₦{product.price}</span>
                       </div>
                     </>
                   )}
                   {!savings && (
-                    <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                    <div className="flex justify-between border-t pt-2 text-lg font-semibold">
                       <span>Total:</span>
                       <span>₦{product.price}</span>
                     </div>
@@ -278,9 +270,9 @@ function CheckoutComponent() {
                 </div>
 
                 {savings > 0 && (
-                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-3">
                     <div className="flex items-center gap-2">
-                      <Gift className="w-4 h-4 text-green-600" />
+                      <Gift className="h-4 w-4 text-green-600" />
                       <span className="text-sm font-medium text-green-800">
                         You&apos;re saving ₦{savings}!
                       </span>
@@ -289,22 +281,68 @@ function CheckoutComponent() {
                 )}
               </CardContent>
             </Card>
+            <div className="mt-5 rounded-xl border p-4">
+              <header className="mb-4 border-b py-2 text-xl font-medium">Comments</header>
+              {comments && comments.list.length > 0 ? (
+                comments.list.map((comment, index) => (
+                  <Comment
+                    key={index}
+                    authorName={"Anonymous User"}
+                    authorUrl={"/placeholder.png"}
+                    text={comment.content}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No comments yet.</p>
+              )}
+              {/* <Comment authorName="Eniola Abayoi" authorUrl="/random.png" /> */}
+
+              {/* Comment field */}
+              <section className="mt-5 grid grid-cols-[35px_1fr] gap-x-3">
+                <Avatar className="col-start-1 col-end-1 h-[35px] w-full">
+                  <AvatarImage src={product.creator.avatar} />
+                  <AvatarFallback className="text-xs">
+                    {product.creator.name
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="border-muted-foreground/50 w-full rounded-md border p-2"
+                    placeholder="Write a comment..."
+                  ></textarea>
+                  <Button
+                    disabled={pending}
+                    onClick={addCommentAction}
+                    className="mt-2 ml-[93%] h-9 w-9 rounded-full"
+                  >
+                    {pending ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <ArrowUp className="h-full" />
+                    )}
+                  </Button>
+                </div>
+              </section>
+            </div>
           </div>
 
           {/* Payment Form */}
           <div className="order-1 lg:order-2">
-            <div>
+            <div className="sticky top-24">
               <Card>
                 <CardHeader>
                   <CardTitle>Payment Details</CardTitle>
-                  <CardDescription>
-                    Complete your purchase to get instant access
-                  </CardDescription>
+                  <CardDescription>Complete your purchase to get instant access</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Contact Information */}
                   <div>
-                    <h3 className="font-medium mb-3">Contact Information</h3>
+                    <h3 className="mb-3 font-medium">Contact Information</h3>
                     <div className="space-y-4">
                       <div>
                         <Input
@@ -316,9 +354,7 @@ function CheckoutComponent() {
                           className={errors.email ? "border-red-500" : ""}
                         />
                         {errors.email && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {errors.email}
-                          </p>
+                          <p className="mt-1 text-sm text-red-500">{errors.email}</p>
                         )}
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -331,9 +367,7 @@ function CheckoutComponent() {
                             className={errors.firstName ? "border-red-500" : ""}
                           />
                           {errors.firstName && (
-                            <p className="text-sm text-red-500 mt-1">
-                              {errors.firstName}
-                            </p>
+                            <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
                           )}
                         </div>
                         <div>
@@ -345,9 +379,7 @@ function CheckoutComponent() {
                             className={errors.lastName ? "border-red-500" : ""}
                           />
                           {errors.lastName && (
-                            <p className="text-sm text-red-500 mt-1">
-                              {errors.lastName}
-                            </p>
+                            <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
                           )}
                         </div>
                       </div>
@@ -357,16 +389,16 @@ function CheckoutComponent() {
                   {/* Payment Method */}
 
                   {/* Security Notice */}
-                  <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                    <Shield className="w-4 h-4 text-green-600" />
-                    <span className="text-sm text-muted-foreground">
+                  <div className="bg-muted/50 flex items-center gap-2 rounded-lg p-3">
+                    <Shield className="h-4 w-4 text-green-600" />
+                    <span className="text-muted-foreground text-sm">
                       Your payment information is encrypted and secure
                     </span>
                   </div>
 
                   {/* Pricing Options */}
                   <div>
-                    <h3 className="font-medium mb-3">Select Plan</h3>
+                    <h3 className="mb-3 font-medium">Select Plan</h3>
                     <div className="space-y-3">
                       {[
                         {
@@ -395,58 +427,6 @@ function CheckoutComponent() {
                           isRecommended={plan.duration === "Lifetime"}
                         />
                       ))}
-                      {/* <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="pricingPlan"
-                            value="yearly"
-                            className="w-4 h-4"
-                          />
-                          <div>
-                            <div className="font-medium">Yearly Access</div>
-                            <div className="text-sm text-muted-foreground">
-                              Save 20% with annual billing
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold">
-                            ₦{Math.round(product.price * 12 * 0.8)}/yr
-                          </div>
-                          <div className="text-xs text-green-600">Save 20%</div>
-                        </div>
-                      </label>
-
-                      <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors border-primary/50 bg-primary/5">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="pricingPlan"
-                            value="lifetime"
-                            className="w-4 h-4"
-                          />
-                          <div>
-                            <div className="font-medium flex items-center gap-2">
-                              Lifetime Access
-                              <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                                Best Value
-                              </span>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              One-time payment, access forever
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold">
-                            ₦{Math.round(product.price * 24)}
-                          </div>
-                          <div className="text-xs text-green-600">
-                            Best deal
-                          </div>
-                        </div>
-                      </label> */}
                     </div>
                   </div>
 
@@ -460,7 +440,7 @@ function CheckoutComponent() {
                   >
                     {isProcessing ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                         Processing...
                       </>
                     ) : (
@@ -468,7 +448,7 @@ function CheckoutComponent() {
                     )}
                   </Button>
 
-                  <p className="text-xs text-center text-muted-foreground">
+                  <p className="text-muted-foreground text-center text-xs">
                     By completing your purchase, you agree to our{" "}
                     <Link href="/terms" className="underline">
                       Terms of Service
@@ -484,27 +464,39 @@ function CheckoutComponent() {
           </div>
         </div>
       </div>
+      <Modal isOpen={success} hasCloseBtn={false} onClose={() => {}}>
+        <PaymentSuccess />
+      </Modal>
     </div>
   );
 }
 
-export default function CheckoutPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CheckoutComponent />
-    </Suspense>
-  );
-}
-
-type TPriceCardProps = {
-  price: number;
-  duration: string;
-  isRecommended?: boolean;
-  remark?: string;
-  currentlySelectedPlan: string;
-  setCurrentlySelectedPlan: (plan: string) => void;
-};
-
+const Comment = ({
+  authorUrl,
+  authorName,
+  text,
+}: {
+  authorUrl: string;
+  authorName: string;
+  text: string;
+}) => (
+  <article className="grid grid-cols-[35px_1fr] gap-x-4">
+    <Avatar className="col-start-1 col-end-1 h-[35px] w-full">
+      <AvatarImage src={authorUrl} />
+      <AvatarFallback className="text-xs">
+        {authorName
+          .split(" ")
+          .map((n: string) => n[0])
+          .join("")}
+      </AvatarFallback>
+    </Avatar>
+    <div className="col-start-2 col-end-6 flex items-center text-sm font-medium">
+      <strong>Jenny Wen</strong>
+      <span className="pl-2 text-gray-400">6 hours ago</span>
+    </div>
+    <div className="col-start-2 col-end-6">{text}</div>
+  </article>
+);
 const PriceCard = ({
   price,
   duration,
@@ -515,7 +507,7 @@ const PriceCard = ({
 }: TPriceCardProps) => {
   return (
     <label
-      className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 ${
+      className={`hover:bg-muted/50 flex cursor-pointer items-center justify-between rounded-lg border p-4 ${
         currentlySelectedPlan === duration ? "border-primary/50" : ""
       } transition-colors`}
     >
@@ -524,20 +516,20 @@ const PriceCard = ({
           type="radio"
           name="pricingPlan"
           value="monthly"
-          className="w-4 h-4"
+          className="h-4 w-4"
           checked={currentlySelectedPlan === duration}
           onClick={() => setCurrentlySelectedPlan(duration)}
         />
         <div>
-          <div className="font-medium flex items-center gap-2">
+          <div className="flex items-center gap-2 font-medium">
             {duration} Access{" "}
             {isRecommended && (
-              <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+              <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
                 Best Value
               </span>
             )}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-muted-foreground text-sm">
             {/* Billed monthly, cancel anytime */}
             {remark}
           </div>
@@ -550,4 +542,61 @@ const PriceCard = ({
   );
 };
 
-//monthly access
+const PaymentSuccess = () => {
+  return (
+    <div className="flex flex-col items-center justify-center p-8">
+      <svg width="200" height="200" viewBox="0 0 200 200" className="mb-4">
+        {/* Credit card morphing */}
+        <g className="animate-card-morph">
+          {/* Card shape */}
+          <rect
+            x="40"
+            y="80"
+            width="120"
+            height="75"
+            rx="8"
+            fill="none"
+            stroke="#8b5cf6"
+            strokeWidth="3"
+            className="card-rect"
+          />
+          <rect
+            x="40"
+            y="95"
+            width="120"
+            height="15"
+            fill="#8b5cf6"
+            opacity="0.3"
+            className="card-stripe"
+          />
+          <circle cx="140" cy="135" r="8" fill="#8b5cf6" opacity="0.5" className="card-chip" />
+        </g>
+
+        {/* Success checkmark that replaces card */}
+        <g>
+          {" "}
+          {/*className="animate-payment-check"*/}
+          <circle
+            cx="100"
+            cy="100"
+            r="50"
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="3"
+            className="payment-circle"
+          />
+          <path
+            d="M70 100 L90 120 L130 80"
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="payment-path"
+          />
+        </g>
+      </svg>
+      <p className="text-lg font-semibold text-gray-700">Payment Successful!</p>
+    </div>
+  );
+};
