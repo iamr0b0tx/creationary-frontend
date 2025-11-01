@@ -13,6 +13,7 @@ import { logger } from "@/lib/clientLogger";
 import { categories } from "@/lib/data/exploreContent";
 import { PaginationWrapper } from "@/components/wrappers/paginationWrapper";
 import { TCategory, TContentItem, TPagination } from "@/lib/types/types";
+import { useDebounceCallback } from "@/lib/hooks/debounce";
 
 // const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
@@ -26,18 +27,23 @@ export default function ExplorePageComponent({
 }) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
-  const [searchQuery, setSearchQuery] = useState("");
   const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
-  // Simulated API calls
-  const handleSearch = async (query: string) => {
-    logger.info(`Simulated API call: GET /api/content/search?q=${query}`);
-    // Backend will handle content search
-  };
+  const handleSearch = useDebounceCallback(async (query: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (query.trim()) {
+      params.set("query", query);
+      params.set("page", "1"); // Reset to first page on new search
+    } else {
+      params.delete("query");
+      params.set("page", "1"); // Reset to first page if search is cleared
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  }, 400);
 
   const _handleLikeContent = async (contentId: number) => {
     logger.info(`Simulated API call: POST /api/content/${contentId}/like`);
@@ -51,15 +57,14 @@ export default function ExplorePageComponent({
 
   const filteredContent = initialContent.filter((content) => {
     const matchesCategory = selectedCategory === "All" || content.category === selectedCategory;
-    const matchesSearch =
-      content.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      content.creator.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+
+    return matchesCategory;
   });
 
-  // const totalPages = Math.ceil(increasedContent.length / pagination.limits);
   const onPageChange = (page: number) => {
-    router.replace(`${pathname}?page=${page}`);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page.toString());
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -99,9 +104,8 @@ export default function ExplorePageComponent({
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Search content or creators..."
-                value={searchQuery}
+                defaultValue={searchParams.get("query") ?? ""}
                 onChange={(e) => {
-                  setSearchQuery(e.target.value);
                   handleSearch(e.target.value);
                 }}
                 className="pl-10"

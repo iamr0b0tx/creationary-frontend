@@ -11,9 +11,11 @@ export default async function ExplorePage(props: {
 }) {
   const params = await props.searchParams;
   const currentPage = params?.page || "1";
+  const query = params?.query || "";
   const { pagination, posts } = await getContentData(
     (await cookies()).get("token")?.value ?? "",
-    currentPage
+    currentPage,
+    query
   );
 
   const transformContent = (items: TContentItem[]) => {

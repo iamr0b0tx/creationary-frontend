@@ -22,3 +22,4 @@ export function objectToFormData(obj: Record<string, unknown>) {
   }
   return formData;
 }
+

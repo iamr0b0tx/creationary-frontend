@@ -13,15 +13,16 @@ const categories: TCategory[] = [
   "Business",
 ];
 
-const getContentData = async (userToken: string, page: string) => {
+const getContentData = async (userToken: string, page: string, query: string) => {
+  const params = new URLSearchParams({page, search: query})
   try {
-    const response = await fetch(`${baseUrl}/posts?page=${page}`, {
+    const response = await fetch(`${baseUrl}/posts?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${userToken}`,
       },
       next: {
         revalidate: 24 * 60 * 60, // Revalidate once every 24 hours
-        tags: [`page-${page}`],
+        tags: [`page-${page}`, `query-${query}`],
       }
     });
 
