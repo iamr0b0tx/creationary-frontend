@@ -1,6 +1,6 @@
 const creators = [
   {
-    id: 1,
+    _id: 1,
     name: "Sarah Chen",
     username: "sarah-chen",
     avatar: "/female-photographer.png",
@@ -26,7 +26,7 @@ const creators = [
     },
     content: [
       {
-        id: 1,
+        _id: 1,
         title: "Professional Portrait Photography Masterclass",
         thumbnail: "/portrait-studio.png",
         price: 49.99,
@@ -42,7 +42,7 @@ const creators = [
         publishedAt: "2024-01-15",
       },
       {
-        id: 2,
+        _id: 2,
         title: "Street Photography Essentials",
         thumbnail: "/camera-settings.jpg",
         price: 29.99,
@@ -58,7 +58,7 @@ const creators = [
         publishedAt: "2024-01-10",
       },
       {
-        id: 3,
+        _id: 3,
         title: "Lightroom Editing Workflow",
         thumbnail: "/lightroom-editing.jpg",
         price: 39.99,
@@ -75,7 +75,7 @@ const creators = [
     ],
   },
   {
-    id: 2,
+    _id: 2,
     name: "Marcus Johnson",
     username: "marcus-johnson",
     avatar: "/male-music-producer.jpg",
@@ -101,7 +101,7 @@ const creators = [
     },
     content: [
       {
-        id: 4,
+        _id: 4,
         title: "Beat Making Fundamentals in Logic Pro",
         thumbnail: "/music-production-studio.png",
         price: 59.99,
@@ -119,7 +119,7 @@ const creators = [
     ],
   },
   {
-    id: 3,
+    _id: 3,
     name: "Elena Rodriguez",
     username: "elena-rodriguez",
     avatar: "/female-fitness-trainer.png",
@@ -145,7 +145,7 @@ const creators = [
     },
     content: [
       {
-        id: 5,
+        _id: 5,
         title: "30-Day Home Workout Challenge",
         thumbnail: "/home-fitness.png",
         price: 29.99,
@@ -161,7 +161,7 @@ const creators = [
         publishedAt: "2024-01-20",
       },
       {
-        id: 6,
+        _id: 6,
         title: "Core Strength Fundamentals",
         thumbnail: "/fitness-workout-routine.png",
         price: 19.99,
@@ -181,5 +181,5 @@ const creators = [
 ];
 
 export const getCreatorData = (id: number) => {
-  return creators.find((creator) => creator.id === id) || null;
+  return creators.find((creator) => creator._id === id) || null;
 };

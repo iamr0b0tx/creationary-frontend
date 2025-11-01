@@ -1,6 +1,6 @@
 export const featuredCreators = [
   {
-    id: 1,
+    _id: 1,
     name: "Sarah Chen",
     username: "sarah-chen",
     avatar: "/female-photographer.png",
@@ -10,7 +10,7 @@ export const featuredCreators = [
     description: "Professional landscape and portrait photography tutorials",
   },
   {
-    id: 2,
+    _id: 2,
     name: "Marcus Johnson",
     username: "marcus-johnson",
     avatar: "/male-music-producer.jpg",
@@ -20,20 +20,20 @@ export const featuredCreators = [
     description: "Beat making and music production masterclasses",
   },
   {
-    id: 3,
+    _id: 3,
     name: "Elena Rodriguez",
     username: "elena-rodriguez",
     avatar: "/female-fitness-trainer.png",
     category: "Fitness",
     subscribers: 15200,
     monthlyEarnings: 11800,
-    description: "Home workout routines and nutrition guidance",
+    description: "Home workout routines and nutrition gu_idance",
   },
 ];
 
 export const featuredContent = [
   {
-    id: 1,
+    _id: 1,
     title: "Advanced Portrait Lighting Techniques",
     creator: "Sarah Chen",
     thumbnail: "/photography-lighting-setup.png",
@@ -43,7 +43,7 @@ export const featuredContent = [
     category: "Photography",
   },
   {
-    id: 2,
+    _id: 2,
     title: "Creating Cinematic Beats in Logic Pro",
     creator: "Marcus Johnson",
     thumbnail: "/music-production-studio.png",
@@ -53,7 +53,7 @@ export const featuredContent = [
     category: "Music",
   },
   {
-    id: 3,
+    _id: 3,
     title: "30-Day Core Transformation Challenge",
     creator: "Elena Rodriguez",
     thumbnail: "/fitness-workout-routine.png",
