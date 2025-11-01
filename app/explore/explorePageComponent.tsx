@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,12 +28,11 @@ export default function ExplorePageComponent({
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [visitedPages, setVisitedPages] = useState<Set<number>>(new Set());
 
   // const searchParams = useSearchParams();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
   // Simulated API calls
   const handleSearch = async (query: string) => {
@@ -51,13 +50,6 @@ export default function ExplorePageComponent({
     router.push(`/checkout?product=${contentId}`);
   };
 
-  useEffect(() => {
-    if(!visitedPages.has(pagination.currentPage)) {
-      setVisitedPages((visited) => visited.add(pagination.currentPage));
-    }
-    setCurrentPage(pagination.currentPage);
-  }, [])
-
   const filteredContent = initialContent.filter((content) => {
     const matchesCategory = selectedCategory === "All" || content.category === selectedCategory;
     const matchesSearch =
@@ -66,39 +58,9 @@ export default function ExplorePageComponent({
     return matchesCategory && matchesSearch;
   });
 
-  const increasedContent = [
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-    ...filteredContent,
-  ];
-
-  // pagination: {
-  //         totalPosts,
-  //         currentPage: pageNumber,
-  //         totalPages,
-  //         limits: pageSize,
-  //       }
-  // ITEMS_PER_PAGE ==> pagination.limits
-  
-  const start = currentPage * pagination.limits - pagination.limits;
-  const end = start + pagination.limits;
-  const paginatedContent = increasedContent.slice(start, end);
-
   // const totalPages = Math.ceil(increasedContent.length / pagination.limits);
   const onPageChange = (page: number) => {
-    if (!visitedPages.has(page)) {
-      setVisitedPages((visited) => visited.add(page));
-      router.replace(`${pathname}?page=${page}`);
-    } else setCurrentPage(page);
+    router.replace(`${pathname}?page=${page}`);
   };
 
   return (
@@ -170,7 +132,7 @@ export default function ExplorePageComponent({
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {paginatedContent.map((content, index) => (
+          {filteredContent.map((content, index) => (
             <Card
               key={content.id + "" + index}
               className="animate-fade-in-up group cursor-pointer overflow-hidden pt-0 pb-0 transition-all duration-300 hover:shadow-lg"
@@ -178,7 +140,7 @@ export default function ExplorePageComponent({
               onMouseEnter={() => setHoveredCard(content.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              <CardHeader className="h-full pb-3">
+              <CardHeader className="h-full py-3">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Avatar className="h-6 w-6">
@@ -218,10 +180,10 @@ export default function ExplorePageComponent({
                   <div className="flex items-center space-x-2">
                     {content.price > 0 ? (
                       <div className="flex items-center space-x-2">
-                        <span className="text-primary text-lg font-bold">${content.price}</span>
+                        <span className="text-primary text-lg font-bold">₦{content.price}</span>
                         {content.originalPrice && (
                           <span className="text-muted-foreground text-sm line-through">
-                            ${content.originalPrice}
+                            ₦{content.originalPrice}
                           </span>
                         )}
                       </div>
@@ -238,7 +200,7 @@ export default function ExplorePageComponent({
           ))}
         </div>
         <PaginationWrapper
-          currentPage={pagination.currentPage}
+          currentPage={currentPage}
           onPageChange={onPageChange}
           totalPages={pagination.totalPages}
           maxVisiblePages={MAX_VISIBLE_PAGES}

@@ -15,22 +15,26 @@ const categories: TCategory[] = [
 
 const getContentData = async (userToken: string, page: string) => {
   try {
-    const response = await fetch(`${baseUrl}/posts`, {
+    const response = await fetch(`${baseUrl}/posts?page=${page}`, {
       headers: {
         Authorization: `Bearer ${userToken}`,
       },
+      next: {
+        revalidate: 24 * 60 * 60, // Revalidate once every 24 hours
+        tags: [`page-${page}`],
+      }
     });
 
     if (!response.ok) {
       throw new Error("Failed to fetch content");
     }
     const content = await response.json();
-    const { posts, pagination } = content.datacontent.data;
+    const { posts, pagination } = content.data;
 
     return { status: "success", pagination, posts };
   } catch (err) {
-    throw new Error("Error fetching content data");
     logger.error("Error fetching content data:", err);
+    throw new Error("Error fetching content data");
   }
 };
 
