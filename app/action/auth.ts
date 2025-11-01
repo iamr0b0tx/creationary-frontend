@@ -10,6 +10,7 @@ import {
   LoginActionState,
   ResetPasswordActionState,
 } from "@/lib/types/types";
+import { baseUrl } from "@/lib/baseUrl";
 
 export async function handleEmailLogin(
   _: LoginActionState,
@@ -29,7 +30,7 @@ export async function handleEmailLogin(
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/auth/login`, {
+    const res = await fetch(`${baseUrl}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +90,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/auth/signup`, {
+    const res = await fetch(`${baseUrl}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -155,7 +156,7 @@ export async function handlePasswordReset(
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/auth/reset-password?token=${token}`, {
+    const res = await fetch(`${baseUrl}/auth/reset-password?token=${token}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -192,7 +193,7 @@ export async function handleForgotPassword(
   }
 
   try {
-    const res = await fetch(`${process.env.BASE_URL}/auth/forgot-password`, {
+    const res = await fetch(`${baseUrl}/auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

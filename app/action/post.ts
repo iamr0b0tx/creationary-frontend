@@ -1,5 +1,6 @@
 "use server";
 
+import { baseUrl } from "@/lib/baseUrl";
 import { postSchema } from "@/lib/definitions";
 import logger from "@/lib/serverLogger";
 import { PostActionState } from "@/lib/types/types";
@@ -44,7 +45,7 @@ export const createPost = async (
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${process.env.BASE_URL}/posts`, {
+    const response = await fetch(`${baseUrl}/posts`, {
       method: "POST",
       headers,
       body: JSON.stringify(validatedFields.data),

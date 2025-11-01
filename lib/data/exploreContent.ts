@@ -1,3 +1,4 @@
+import { baseUrl } from "../baseUrl";
 import { logger } from "../clientLogger";
 import { TCategory } from "../types/types";
 
@@ -14,7 +15,7 @@ const categories: TCategory[] = [
 
 const getContentData = async (userToken: string) => {
   try {
-    const response = await fetch(`${process.env.BASE_URL}/posts`, {
+    const response = await fetch(`${baseUrl}/posts`, {
       headers: {
         "Authorization": `Bearer ${userToken}`
       }
