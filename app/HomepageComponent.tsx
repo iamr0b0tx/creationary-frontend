@@ -103,11 +103,11 @@ export default function HomePageComponent({ user }: { user: TUser | null }) {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {featuredCreators.map((creator, index) => (
-              <Link key={creator.id} href={`/user/${creator.username}`}>
+              <Link key={creator._id} href={`/user/${creator.username}`}>
                 <Card
                   className="cursor-pointer transition-all duration-300 hover:shadow-lg"
                   style={{ animationDelay: `${index * 0.1}s` }}
-                  onMouseEnter={() => setHoveredCard(creator.id)}
+                  onMouseEnter={() => setHoveredCard(creator._id)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
                   <CardHeader className="text-center">
@@ -158,7 +158,7 @@ export default function HomePageComponent({ user }: { user: TUser | null }) {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {featuredContent.map((content, index) => (
               <Card
-                key={content.id}
+                key={content._id}
                 className="card group"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >

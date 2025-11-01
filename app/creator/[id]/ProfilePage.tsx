@@ -289,7 +289,7 @@ export default function UserProfileContent({ id }: { id: number }) {
           <TabsContent value="content">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {creator.content.map((item) => (
-                <Card key={item.id} className="group transition-all duration-300 hover:shadow-lg">
+                <Card key={item._id} className="group transition-all duration-300 hover:shadow-lg">
                   {/* Note that this is remove because we do no support images currently. */}
                   {/* <div className="relative aspect-video overflow-hidden rounded-t-lg">
                     <img
@@ -357,10 +357,10 @@ export default function UserProfileContent({ id }: { id: number }) {
                         onClick={() => {
                           if (item.price === 0) {
                             // Handle free content viewing
-                            logger.info("Play free content:", item.id);
+                            logger.info("Play free content:", item._id);
                           } else {
                             // Navigate to checkout
-                            router.push(`/checkout?product=${item.id}`);
+                            router.push(`/checkout?product=${item._id}`);
                           }
                         }}
                       >

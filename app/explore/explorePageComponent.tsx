@@ -137,10 +137,11 @@ export default function ExplorePageComponent({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredContent.map((content, index) => (
             <Card
-              key={content.id + "" + index}
+              key={content._id + "" + index}
               className="animate-fade-in-up group cursor-pointer overflow-hidden pt-0 pb-0 transition-all duration-300 hover:shadow-lg"
               style={{ animationDelay: `${index * 0.1}s` }}
-              onMouseEnter={() => setHoveredCard(content.id)}
+              onClick={() => router.push(`/checkout/${content._id}`)}
+              onMouseEnter={() => setHoveredCard(content._id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
               <CardHeader className="h-full py-3">
@@ -156,6 +157,7 @@ export default function ExplorePageComponent({
                       </AvatarFallback>
                     </Avatar>
                     <Link
+                      onClick={(e) => e.stopPropagation()}
                       href={`/creator/${content.creator.username}`}
                       className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                     >

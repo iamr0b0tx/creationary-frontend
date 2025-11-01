@@ -67,3 +67,38 @@ export const createPost = async (
     };
   }
 };
+
+export const addComment = async (
+  contentId: string,
+  commentText: string
+): Promise<PostActionState> => {
+  try {
+    const token = (await cookies()).get("token")?.value;
+    console.log("conetne" , contentId, commentText);
+
+    const response = await fetch(`${baseUrl}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ post: contentId, content: commentText }),
+    });
+
+    if (!response.ok) {
+      const { message } = await response.json();
+      logger.error("Failed to add comment:", message);
+      throw new Error(message);
+    }
+
+    await response.json();
+    logger.info("Comment added successfully");
+    return { status: "success" };
+  } catch (error: unknown) {
+    logger.error("Error adding comment:", error);
+    return {
+      status: "error",
+      message: (error as Error).message ?? "An error occurred while adding the comment.",
+    };
+  }
+}

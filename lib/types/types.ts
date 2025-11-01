@@ -28,7 +28,7 @@ export type TCategory =
   | "All";
 
 export type TContentItem = {
-  id: string; // corresponds to MongoDB _id
+  _id: string; // corresponds to MongoDB _id
   title: string;
   content: string;
   author: string; // ObjectId reference to User
@@ -77,4 +77,27 @@ export type TPagination = {
   currentPage: number;
   totalPages: number;
   limits: number;
+};
+
+export type TPriceCardProps = {
+  price: number;
+  duration: string;
+  isRecommended?: boolean;
+  remark?: string;
+  currentlySelectedPlan: string;
+  setCurrentlySelectedPlan: (plan: string) => void;
+};
+
+export type TComment = {
+  list: TList[];
+  pagination: TPagination;
+};
+
+type TList = {
+  post: string;
+  author: string; // mongoose.Types.ObjectId | IUser;
+  content: string;
+  likes?: number;
+  createdAt: Date;
+  updatedAt: Date;
 };
