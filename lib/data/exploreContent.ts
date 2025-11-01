@@ -14,7 +14,7 @@ const categories: TCategory[] = [
 ];
 
 const getContentData = async (userToken: string, page: string, query: string) => {
-  const params = new URLSearchParams({page, search: query})
+  const params = new URLSearchParams({ page, search: query });
   try {
     const response = await fetch(`${baseUrl}/posts?${params.toString()}`, {
       headers: {
@@ -23,7 +23,7 @@ const getContentData = async (userToken: string, page: string, query: string) =>
       next: {
         revalidate: 24 * 60 * 60, // Revalidate once every 24 hours
         tags: [`page-${page}`, `query-${query}`],
-      }
+      },
     });
 
     if (!response.ok) {
@@ -39,4 +39,27 @@ const getContentData = async (userToken: string, page: string, query: string) =>
   }
 };
 
-export { categories, getContentData };
+const getContentById = async (contentId: string, userToken: string) => {
+  try {
+    const response = await fetch(`${baseUrl}/posts/${contentId}`, {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+      // next: {
+      //   revalidate: 24 * 60 * 60, // Revalidate once every 24 hours
+      //   // tags: [`content-${contentId}`],
+      // }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch content by ID");
+    }
+    const content = await response.json();
+    return { status: "success", content: content.data };
+  } catch (err) {
+    logger.error("Error fetching content by ID:", err);
+    throw new Error("Error fetching content by ID");
+  }
+};
+
+export { categories, getContentData, getContentById };

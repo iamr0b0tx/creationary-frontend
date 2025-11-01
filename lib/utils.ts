@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { TContentItem } from "./types/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -23,3 +24,14 @@ export function objectToFormData(obj: Record<string, unknown>) {
   return formData;
 }
 
+export const transformContent = (items: TContentItem[]) => {
+  return items.map((item, index) => ({
+    ...item,
+    creator: {
+      name: "Anonymous Creator",
+      username: "user-" + (item._id?.slice(-6) || index),
+      avatar: "/default-avatar.png",
+      verified: false,
+    },
+  }));
+};
