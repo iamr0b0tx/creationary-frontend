@@ -14,7 +14,6 @@ import {
   MapPin,
   Calendar,
   Star,
-  Play,
   Share,
   MessageCircle,
   Instagram,
@@ -66,34 +65,6 @@ export default function UserProfileContent({ id }: { id: number }) {
   return (
     <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
       {/* Header */}
-      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <Play className="text-primary-foreground h-4 w-4" />
-            </div>
-            <span className="text-xl font-bold">Creationary</span>
-          </Link>
-
-          <nav className="hidden items-center space-x-6 md:flex">
-            <Link
-              href="/explore"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Explore
-            </Link>
-            <Link href="/auth/login">
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button size="sm">Join Now</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
-
       {/* Cover Image */}
       <div className="relative h-64 overflow-hidden md:h-80">
         <Image

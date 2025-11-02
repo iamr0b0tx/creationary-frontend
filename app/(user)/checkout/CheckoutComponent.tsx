@@ -22,7 +22,7 @@ import { posthog } from "posthog-js";
 import { toast } from "sonner";
 import Modal from "@/components/modal";
 import { TComment, TContentItem, TPriceCardProps } from "@/lib/types/types";
-import { addComment } from "../action/post";
+import { addComment } from "../../action/post";
 
 export type ReferenceObj = {
   message: string;

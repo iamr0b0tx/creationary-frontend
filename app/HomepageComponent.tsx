@@ -1,69 +1,19 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Play, Heart, Lock, Loader2 } from "lucide-react";
+import { Play, Heart, Lock } from "lucide-react";
 import Link from "next/link";
 import { featuredContent, featuredCreators } from "@/lib/data/homepageDummy";
-import { TUser } from "@/lib/types/types";
-import { handleLogout } from "./action/auth";
 
-export default function HomePageComponent({ user }: { user: TUser | null }) {
+export default function HomePageComponent() {
   const [_hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const logoutAction = async () => {
-    startTransition(async () => {
-      await handleLogout();
-    });
-  };
 
   return (
     <div className="home-wrapper">
-      {/* Header */}
-      <header className="home-header">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="flex items-center space-x-2">
-            <div className="logo-wrapper">
-              <Play className="text-primary-foreground h-4 w-4" />
-            </div>
-            <span className="text-xl font-bold">Creationary</span>
-          </div>
-
-          <nav className="hidden items-center space-x-6 md:flex">
-            <Link href="/explore" className="top-link">
-              Explore
-            </Link>
-            <Link href="/pricing" className="top-link">
-              Pricing
-            </Link>
-            <Link href="/about" className="top-link">
-              About
-            </Link>
-          </nav>
-
-          {!user ? (
-            <div className="flex items-center space-x-3">
-              <Button variant="ghost" asChild>
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/auth/signup">Get Started</Link>
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Button onClick={logoutAction}>
-                {isPending ? <Loader2 className="animate-spin" /> : "LogOut"}
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="px-4 py-20">
         <div className="container mx-auto text-center">
@@ -210,7 +160,7 @@ export default function HomePageComponent({ user }: { user: TUser | null }) {
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="/creator/auth/signup">Become a Creator</Link>
+                <Link href="/auth/signup">Become a Creator</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/auth/signup">Join as Member</Link>
