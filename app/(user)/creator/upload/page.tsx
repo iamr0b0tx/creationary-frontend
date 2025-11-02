@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,13 +17,11 @@ import {
   FileText,
   Check,
   AlertCircle,
-  DollarSign,
   Camera,
   Mic,
   Film,
   // Image as ImageIcon,
 } from "lucide-react";
-import Link from "next/link";
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipContent } from "@/components/ui/tooltip";
 import {
@@ -33,6 +31,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PostActionState, Tcontent } from "@/lib/types/types";
+import { createPost } from "@/app/action/post";
+import { objectToFormData } from "@/lib/utils";
+import Modal from "@/components/modal";
 
 const categories = [
   "Photography",
@@ -69,24 +71,34 @@ export default function UploadContentPage() {
   //   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentStep, setCurrentStep] = useState<TSteps>(TSteps.CONTENT_TYPE);
-  const [contentData, setContentData] = useState({
+  const [contentData, setContentData] = useState<Tcontent>({
     type: "",
     title: "",
     description: "",
+    content: "",
     category: "",
     tags: [] as string[],
     price: "",
     originalPrice: "",
-    isPremium: false,
-    thumbnail: null as File | null,
-    visibility: "public", // public, private, unlisted
-    scheduledDate: "",
+    // isPremium: false,
+    // thumbnail: null as File | null,
+    // visibility: "public", // public, private, unlisted
+    // scheduledDate: "",
     estimatedDuration: "",
   });
 
-  //   const [dragActive, setDragActive] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [postState, action, pending] = useActionState<PostActionState, FormData>(
+    createPost.bind(null, contentData.tags),
+    {
+      status: "no_action",
+    }
+  );
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  async function handleCreatePostAction() {
+    action(objectToFormData(contentData));
+  }
+  // const [isUploading, setIsUploading] = useState(false);
 
   const handleInputChange = (field: string, value: unknown) => {
     setContentData((prev) => ({ ...prev, [field]: value }));
@@ -109,15 +121,19 @@ export default function UploadContentPage() {
     }));
   };
 
-  const handleSubmit = async () => {
-    setIsUploading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsUploading(false);
-
-    // Redirect to creator dashboard
-    router.push("/creator/dashboard?success=content-uploaded");
-  };
+  useEffect(() => {
+    if (postState.status === "success") {
+      setIsSuccessModalOpen(true);
+      setTimeout(() => {
+        router.push("/explore");
+        setIsSuccessModalOpen(false);
+      }, 4000);
+    }
+    if (postState.status === "error") {
+      alert(postState.message || "An error occurred while uploading content.");
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postState.status]);
 
   const stepTitles = [
     "Content Type",
@@ -127,7 +143,7 @@ export default function UploadContentPage() {
     "Review & Publish",
   ];
 
-  const progress = (currentStep / stepTitles.length) * 100;
+  const progress = ((currentStep + 1) / stepTitles.length) * 100;
 
   return (
     <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
@@ -143,18 +159,18 @@ export default function UploadContentPage() {
             <div>
               <h1 className="font-semibold">Upload Content</h1>
               <p className="text-muted-foreground text-sm">
-                Step {currentStep} of {stepTitles.length}: {stepTitles[currentStep - 1]}
+                Step {currentStep + 1} of {stepTitles.length}: {stepTitles[currentStep]}
               </p>
             </div>
           </div>
 
-          <Button variant="outline" asChild>
+          {/* <Button variant="outline" asChild>
             <Link href="/creator/dashboard">Save as Draft</Link>
-          </Button>
+          </Button> */}
         </div>
       </header>
 
-      <form action={() => {}} className="container mx-auto max-w-4xl px-4 py-8">
+      <form action={handleCreatePostAction} className="container mx-auto max-w-4xl px-4 py-8">
         {/* Progress Bar */}
 
         <Card className="mb-8">
@@ -263,6 +279,16 @@ export default function UploadContentPage() {
                   onChange={(e) => handleInputChange("description", e.target.value)}
                 />
               </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">Content *</label>
+                <textarea
+                  name="content"
+                  className="focus:ring-primary min-h-[120px] w-full resize-none rounded-md border p-3 focus:ring-2 focus:outline-none"
+                  placeholder="Describe what learners will gain from your content..."
+                  value={contentData.content}
+                  onChange={(e) => handleInputChange("content", e.target.value)}
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
@@ -285,11 +311,6 @@ export default function UploadContentPage() {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                    {/* {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))} */}
                   </Select>
                 </div>
 
@@ -311,7 +332,7 @@ export default function UploadContentPage() {
                     placeholder="Add tags (press Enter)"
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
                   <Button onClick={addTag} type="button">
                     <Plus className="h-4 w-4" />
@@ -345,7 +366,9 @@ export default function UploadContentPage() {
                 <div>
                   <label className="mb-2 block text-sm font-medium">Original Price (NGN)</label>
                   <div className="relative">
-                    <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                    <span className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-[75%] transform">
+                      ₦
+                    </span>
                     <Input
                       type="number"
                       name="originalPrice"
@@ -363,7 +386,9 @@ export default function UploadContentPage() {
                 <div>
                   <label className="mb-2 block text-sm font-medium"> Price (NGN)</label>
                   <div className="relative">
-                    <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                    <span className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-[75%] transform">
+                      ₦
+                    </span>
                     <Input
                       type="number"
                       name="price"
@@ -411,6 +436,9 @@ export default function UploadContentPage() {
                 <p className="text-muted-foreground mb-4">
                   {contentData.description || "No description provided"}
                 </p>
+                <p className="text-muted-foreground mb-4">
+                  {contentData.content || "No content provided"}
+                </p>
 
                 <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                   <div>
@@ -433,12 +461,6 @@ export default function UploadContentPage() {
                       {contentData.estimatedDuration || "Not specified"}
                     </p>
                   </div>
-                  {/* <div>
-                    <span className="font-medium">Files:</span>
-                    <p className="text-muted-foreground">
-                      {files.filter((f) => f.status === "completed").length} uploaded
-                    </p>
-                  </div> */}
                 </div>
 
                 {contentData.tags.length > 0 && (
@@ -462,11 +484,8 @@ export default function UploadContentPage() {
                   { label: "Content title added", completed: !!contentData.title },
                   { label: "Description provided", completed: !!contentData.description },
                   { label: "Category selected", completed: !!contentData.category },
-                  //   {
-                  //     label: "Files uploaded",
-                  //     completed: files.some((f) => f.status === "completed"),
-                  //   },
-                  { label: "Thumbnail uploaded", completed: !!contentData.thumbnail },
+                  { label: "Content body added", completed: !!contentData.content },
+                  { label: "Price set", completed: contentData.price !== "" },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     {item.completed ? (
@@ -489,9 +508,10 @@ export default function UploadContentPage() {
         {/* Navigation */}
         <div className="mt-8 flex justify-between">
           <Button
+            type="button"
             variant="outline"
-            onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-            disabled={currentStep === 1}
+            onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+            disabled={currentStep === 0}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Previous
@@ -499,10 +519,16 @@ export default function UploadContentPage() {
 
           {currentStep < stepTitles.length ? (
             <Button
+              type="button"
               onClick={() => setCurrentStep((prev) => Math.min(stepTitles.length, prev + 1))}
               disabled={
-                currentStep === 1 && !contentData.type
-                // || (currentStep === 2 && files.filter((f) => f.status === "completed").length === 0)
+                (currentStep === TSteps.CONTENT_TYPE && !contentData.type) ||
+                (currentStep === TSteps.CONTENT_DETAILS &&
+                  (!contentData.title ||
+                    !contentData.description ||
+                    !contentData.content ||
+                    !contentData.category)) ||
+                (currentStep === TSteps.PRICING_AND_SETTINGS && !contentData.price)
               }
             >
               Next
@@ -510,10 +536,16 @@ export default function UploadContentPage() {
             </Button>
           ) : (
             <Button
-              onClick={handleSubmit}
-              disabled={isUploading || !contentData.title || !contentData.description}
+              type="submit"
+              disabled={
+                pending ||
+                !contentData.title ||
+                !contentData.description ||
+                !contentData.category ||
+                !contentData.content
+              }
             >
-              {isUploading ? (
+              {pending ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   Publishing...
@@ -528,6 +560,65 @@ export default function UploadContentPage() {
           )}
         </div>
       </form>
+      <Modal
+        isOpen={isSuccessModalOpen}
+        hasCloseBtn={true}
+        onClose={() => setIsSuccessModalOpen(false)}
+      >
+        <UploadSuccess />
+      </Modal>
     </div>
   );
 }
+
+const UploadSuccess = () => {
+  return (
+    <div className="flex flex-col items-center justify-center p-8">
+      <svg width="200" height="200" viewBox="0 0 200 200" className="mb-4">
+        {/* Document morphing into checkmark */}
+        <g className="animate-upload-morph">
+          {/* Document shape */}
+          <path
+            d="M60 40 L140 40 L140 160 L60 160 Z"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="3"
+            className="document-path"
+          />
+          <path
+            d="M80 70 L120 70 M80 90 L120 90 M80 110 L100 110"
+            stroke="#3b82f6"
+            strokeWidth="2"
+            className="document-lines"
+          />
+        </g>
+
+        {/* Checkmark that appears */}
+        <g>
+          <circle
+            cx="100"
+            cy="100"
+            r="45"
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="3"
+            className="check-circle"
+          />
+          <path
+            d="M70 100 L90 120 L130 80"
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="check-path"
+          />
+        </g>
+      </svg>
+      <p className="text-center text-lg font-semibold text-gray-700">
+        Your post has been published successfully!
+      </p>
+      <p className="text-center">You will be redirected to the explore page shortly</p>
+    </div>
+  );
+};

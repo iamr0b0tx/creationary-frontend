@@ -1,6 +1,6 @@
 import { expect, test, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import ExplorePageComponent from "../app/explore/explorePageComponent";
+import ExplorePageComponent from "../app/(user)/explore/explorePageComponent";
 
 // Mock Next.js router
 vi.mock("next/navigation", () => ({

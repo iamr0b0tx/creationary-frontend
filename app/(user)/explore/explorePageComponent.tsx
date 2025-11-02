@@ -7,7 +7,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Play, Star } from "lucide-react";
+import { Search, Filter, Star } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
 import { categories } from "@/lib/data/exploreContent";
@@ -18,13 +18,12 @@ import { useDebounceCallback } from "@/lib/hooks/debounce";
 // const ITEMS_PER_PAGE = 9;
 const MAX_VISIBLE_PAGES = 5;
 
-export default function ExplorePageComponent({
-  initialContent,
-  pagination,
-}: {
+type TExploreProps = {
   initialContent: TContentItem[];
   pagination: TPagination;
-}) {
+};
+
+export default function ExplorePageComponent({ initialContent, pagination }: TExploreProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<TCategory>("All");
   const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
@@ -69,27 +68,6 @@ export default function ExplorePageComponent({
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Header */}
-      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <Play className="text-primary-foreground h-4 w-4" />
-            </div>
-            <span className="text-xl font-bold">Creationary</span>
-          </Link>
-
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" asChild>
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/signup">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
