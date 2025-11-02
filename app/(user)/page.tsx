@@ -1,4 +1,4 @@
-import HomePageComponent from "../HomepageComponent";
+import HomePageComponent from "./HomepageComponent";
 
 export default async function HomePage() {
   return <HomePageComponent />;
