@@ -49,8 +49,8 @@ const TopNav = ({ user }: { user: TUser | null }) => {
           </div>
         ) : (
           <div className="flex gap-4">
-            <Button onClick={logoutAction} asChild>
-              <Link href='/creator/upload' >Upload Post</Link>
+            <Button asChild>
+              <Link href="/creator/upload">Upload Post</Link>
             </Button>
             <Button className="bg-red-500" onClick={logoutAction}>
               {isPending ? <Loader2 className="animate-spin" /> : "Log Out"}

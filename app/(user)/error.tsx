@@ -11,7 +11,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
     // Log the error to an error reporting service
     const errorMessage = `Error: ${error.message}\nStack: ${error.stack}\nDigest: ${error.digest}`;
@@ -25,7 +25,10 @@ export default function Error({
         <h2 className="text-center text-2xl font-bold text-red-600">Something went wrong!</h2>
         <p className="text-center text-gray-700">{error.message}</p>
         <button
-          onClick={() => {reset(); router.refresh()}}
+          onClick={() => {
+            reset();
+            router.refresh();
+          }}
           className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
         >
           Try again
