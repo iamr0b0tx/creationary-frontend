@@ -32,9 +32,9 @@ const TopNav = ({ user }: { user: TUser | null }) => {
           <Link href="/explore" className="top-link">
             Explore
           </Link>
-          <Link href="/pricing" className="top-link">
+          {/* <Link href="/pricing" className="top-link">
             Pricing
-          </Link>
+          </Link> */}
           <Link href="/about" className="top-link">
             About
           </Link>
