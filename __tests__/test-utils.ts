@@ -67,4 +67,3 @@ export function resetAllMocks() {
 
 // Re-export everything from RTL with our custom render
 export * from "@testing-library/react";
-export { customRender as render };
