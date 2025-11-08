@@ -40,6 +40,7 @@ const getContentData = async (userToken: string, page: string, query: string) =>
 };
 
 const getContentById = async (contentId: string, userToken: string) => {
+  console.log("Fetching content by ID:", contentId);
   try {
     const response = await fetch(`${baseUrl}/posts/${contentId}`, {
       headers: {
@@ -52,6 +53,7 @@ const getContentById = async (contentId: string, userToken: string) => {
     });
 
     if (!response.ok) {
+      console.log(response, "tis is the response")
       throw new Error("Failed to fetch content by ID");
     }
     const content = await response.json();

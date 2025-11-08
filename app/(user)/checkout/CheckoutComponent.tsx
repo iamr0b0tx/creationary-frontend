@@ -8,16 +8,7 @@ import { currency } from "@/lib/utils/currency";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import {
-  Play,
-  ArrowLeft,
-  Shield,
-  Star,
-  CheckCircle,
-  Gift,
-  ArrowUp,
-  Loader2,
-} from "lucide-react";
+import { ArrowLeft, Shield, Star, CheckCircle, Gift, ArrowUp, Loader2 } from "lucide-react";
 import { posthog } from "posthog-js";
 import { toast } from "sonner";
 import Modal from "@/components/modal";
@@ -166,23 +157,6 @@ export default function CheckoutComponent({
 
   return (
     <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">
-      {/* Header */}
-      <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <Play className="text-primary-foreground h-4 w-4" />
-            </div>
-            <span className="text-xl font-bold">Creationary</span>
-          </Link>
-
-          <div className="flex items-center space-x-2">
-            <Shield className="h-4 w-4 text-green-600" />
-            <span className="text-muted-foreground text-sm">Secure Checkout</span>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto max-w-6xl px-4 py-8">
         {/* Back button */}
         <Button variant="ghost" className="mb-6" onClick={() => router.back()}>
@@ -315,17 +289,19 @@ export default function CheckoutComponent({
                     className="border-muted-foreground/50 w-full rounded-md border p-2"
                     placeholder="Write a comment..."
                   ></textarea>
-                  <Button
-                    disabled={pending}
-                    onClick={addCommentAction}
-                    className="mt-2 ml-[93%] h-9 w-9 rounded-full"
-                  >
-                    {pending ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <ArrowUp className="h-full" />
-                    )}
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button
+                      disabled={pending}
+                      onClick={addCommentAction}
+                      className="mt-2 h-9 w-9 rounded-full"
+                    >
+                      {pending ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        <ArrowUp className="h-full" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </section>
             </div>
@@ -518,13 +494,13 @@ const PriceCard = ({
           value="monthly"
           className="h-4 w-4"
           checked={currentlySelectedPlan === duration}
-          onClick={() => setCurrentlySelectedPlan(duration)}
+          onChange={() => setCurrentlySelectedPlan(duration)}
         />
         <div>
           <div className="flex items-center gap-2 font-medium">
             {duration} Access{" "}
             {isRecommended && (
-              <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
+              <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs max-[400px]:hidden">
                 Best Value
               </span>
             )}

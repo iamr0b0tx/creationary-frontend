@@ -5,12 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Play, Heart, Lock } from "lucide-react";
+import { Play } from "lucide-react";
 import Link from "next/link";
-import { featuredContent, featuredCreators } from "@/lib/data/homepageDummy";
+import { featuredCreators } from "@/lib/data/homepageDummy";
+import { useRouter } from "next/navigation";
+import { TContentItem } from "@/lib/types/types";
 
-export default function HomePageComponent() {
+export default function HomePageComponent({
+  featuredContent,
+}: {
+  featuredContent: TContentItem[];
+}) {
   const [_hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const router = useRouter();
 
   return (
     <div className="home-wrapper">
@@ -111,26 +118,8 @@ export default function HomePageComponent() {
                 key={content._id}
                 className="card group"
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => router.push(`/checkout/${content._id}`)}
               >
-                <div className="relative">
-                  <img
-                    src={content.thumbnail || "/placeholder.svg"}
-                    alt={content.title}
-                    className="img"
-                  />
-                  {!content.isFree && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-black/70 text-white">
-                        <Lock className="mr-1 h-3 w-3" />
-                        Premium
-                      </Badge>
-                    </div>
-                  )}
-                  <div className="absolute bottom-2 left-2 flex items-center space-x-1 text-white">
-                    <Heart className="h-4 w-4" />
-                    <span className="text-sm">{content.likes}</span>
-                  </div>
-                </div>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline">{content.category}</Badge>
@@ -141,7 +130,7 @@ export default function HomePageComponent() {
                     )}
                   </div>
                   <CardTitle className="line-clamp-2 text-lg">{content.title}</CardTitle>
-                  <CardDescription>by {content.creator}</CardDescription>
+                  <CardDescription>by {/*content.creator */} Anonymous User</CardDescription>
                 </CardHeader>
               </Card>
             ))}
