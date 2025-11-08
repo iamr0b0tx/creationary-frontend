@@ -74,7 +74,6 @@ export const addComment = async (
 ): Promise<PostActionState> => {
   try {
     const token = (await cookies()).get("token")?.value;
-    console.log("conetne" , contentId, commentText);
 
     const response = await fetch(`${baseUrl}/comments`, {
       method: "POST",

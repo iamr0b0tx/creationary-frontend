@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import Modal from "@/components/modal";
 import { TComment, TContentItem, TPriceCardProps } from "@/lib/types/types";
 import { addComment } from "../../action/post";
+import { logger } from "@/lib/clientLogger";
 
 export type ReferenceObj = {
   message: string;
@@ -114,7 +115,7 @@ export default function CheckoutComponent({
       description: "Something went wrong during the payment process.",
       action: {
         label: "Undo",
-        onClick: () => console.log("Undo"),
+        onClick: () => logger.info("Undo"),
       },
     });
     setIsProcessing(false);

@@ -57,7 +57,6 @@ export default function SignUpPage() {
 
   useEffect(() => {
     if (actionState?.status === "error") {
-      console.log("Action State Errors:", actionStateErrors);
       setDisplayErrors(true);
       const interval = setTimeout(() => {
         setDisplayErrors(false);
