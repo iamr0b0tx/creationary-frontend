@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Play, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { handleRegister } from "@/app/action/auth";
+import { useRouter } from "next/navigation";
 
 const SignUpCarouselContent = [
   {
@@ -38,12 +39,13 @@ export default function SignUpPage() {
     confirmPassword: "",
     agreeToTerms: false,
   });
+  const router = useRouter();
 
   const [contentToDisplay, setContentToDisplay] = useState(0);
   const [actionState, action, actionPending] = useActionState(handleRegister, undefined);
   const [displayErrors, setDisplayErrors] = useState(false);
 
-  const actionStateErrors = actionState?.errors || {};
+  const actionStateErrors = useMemo(() => actionState?.errors || {}, [actionState?.errors]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -54,7 +56,7 @@ export default function SignUpPage() {
   };
 
   useEffect(() => {
-    if (actionState?.errors) {
+    if (actionState?.status === "error") {
       setDisplayErrors(true);
       const interval = setTimeout(() => {
         setDisplayErrors(false);
@@ -62,7 +64,11 @@ export default function SignUpPage() {
 
       return () => clearTimeout(interval);
     }
-  }, [actionState?.errors]);
+    if (actionState?.status === "success") {
+      router.push("/auth/login");
+    }
+    //eslint-disable-next-line
+  }, [actionState?.status, actionState?.timestamp, actionStateErrors]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,11 +78,9 @@ export default function SignUpPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // router.push("/explore");
-
   return (
     <div className="mx-auto flex max-h-screen justify-center py-12 sm:mx-20 lg:mx-36">
-      <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-screen object-cover" />
+      <Image alt="Background" src="/bg-img.png" fill className="-z-10 h-dvh object-cover" />
       <div className="absolute inset-0 -z-[5] bg-black opacity-50"></div>
       {/* Header */}
       <div className="absolute top-0 right-0 left-0 p-4">
@@ -90,15 +94,15 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      <div className="z-10 grid w-full grid-cols-2">
-        <div className="relative mr-10 ml-14 flex w-full flex-col justify-center gap-[9rem]">
-          <div className="flex items-center gap-8">
+      <div className="z-10 w-full grid-cols-2 lg:grid">
+        <div className="relative ml-14 flex w-full flex-col justify-center gap-[9rem] max-lg:hidden lg:mr-10">
+          <div className="flex items-center gap-8 max-[63rem]:hidden">
             <div className="bg-primary flex h-20 w-24 items-center justify-center rounded-xl">
               <Play className="text-primary-foreground h-8 w-8" />
             </div>
             <span className="text-4xl font-bold text-white">Creationary</span>
           </div>
-          <div className="h-32 w-[calc(100%-3.5rem)] overflow-hidden">
+          <div className="h-48 w-[calc(100%-3.5rem)] overflow-hidden min-[1000px]:h-32">
             <div
               style={{
                 transform: `translateX(-${contentToDisplay * 100}%)`,
@@ -127,7 +131,7 @@ export default function SignUpPage() {
             ))}
           </div>
         </div>
-        <Card className="max-h-screen max-w-md border-0 shadow-none">
+        <Card className="mx-auto max-h-dvh max-w-md border-0 shadow-none max-md:mt-10">
           <CardHeader className="pb-3 text-center">
             <CardTitle className="text-2xl font-bold">Join Creationary</CardTitle>
             <CardDescription className="text-sm">
@@ -136,11 +140,11 @@ export default function SignUpPage() {
           </CardHeader>
 
           <CardContent>
-            {/* {actionState?.errors && (
-              <div className="mb-4 p-3 rounded-md bg-destructive/10 border border-destructive/20">
-                <p className="text-sm text-destructive">{actionState.errors}</p>
+            {displayErrors && actionState?.status === "error" && actionState?.message && (
+              <div className="bg-destructive/10 border-destructive/20 mb-4 rounded-md border p-3">
+                <p className="text-destructive text-sm">{actionState?.message}</p>
               </div>
-            )} */}
+            )}
 
             <form action={action} className="space-y-3">
               {/* Name Fields */}

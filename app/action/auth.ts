@@ -86,24 +86,48 @@ export async function handleRegister(prev: unknown, formData: FormData) {
 
   if (!validatedFields.success) {
     logger.error("Validation errors:", validatedFields.error.flatten());
-    return { errors: z.treeifyError(validatedFields.error).properties };
+    return {
+      status: "error",
+      errors: z.treeifyError(validatedFields.error).properties,
+    };
   }
 
   try {
+    const payload = validatedFields.data;
+    logger.info("Sending signup request with payload:", payload);
+
     const res = await fetch(`${baseUrl}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(validatedFields.data),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      throw new Error("Login failed");
+      // Read the error response body for better debugging
+      const errorMessage = `Signup failed (status ${res.status})`;
+      const errorBody = await res.json();
+
+      logger.error("Error during Signup:", {
+        status: res.status,
+        statusText: res.statusText,
+        message: errorBody.message ?? errorMessage,
+        url: res.url,
+      });
+
+      return {
+        status: "error",
+        message: errorBody?.message ?? errorMessage,
+        timestamp: Date.now(), // Force React to see this as a new error
+      };
     }
 
     const responseData = await res.json();
     logger.info("User registered successfully:", responseData);
+
+    // Set user cookie
     (await cookies()).set({
       name: "user",
       value: JSON.stringify({ ...responseData.user }),
@@ -112,14 +136,17 @@ export async function handleRegister(prev: unknown, formData: FormData) {
       sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
     });
+
+    return { status: "success" };
   } catch (error: unknown) {
-    logger.error("Error during Signup:", error);
+    logger.error("Network error during Signup:", error);
     return {
       status: "error",
-      message: "message" in (error as Error) ? (error as Error).message : "Unable to Signup",
+      message:
+        "message" in (error as Error) ? (error as Error).message : "Network error during signup",
+      timestamp: Date.now(), // Force React to see this as a new error
     };
   }
-  redirect("/auth/login");
 }
 
 export async function handleLogout() {
@@ -213,4 +240,3 @@ export async function handleForgotPassword(
     return { status: "error" };
   }
 }
-

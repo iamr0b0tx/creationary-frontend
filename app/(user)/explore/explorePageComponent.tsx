@@ -7,7 +7,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Star } from "lucide-react";
+import { Search , Star } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/clientLogger";
 import { categories } from "@/lib/data/exploreContent";
@@ -89,14 +89,10 @@ export default function ExplorePageComponent({ initialContent, pagination }: TEx
                 className="pl-10"
               />
             </div>
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Filters
-            </Button>
           </div>
 
           {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => (
               <Button
                 key={category}
