@@ -40,7 +40,7 @@ export default function LoginPage() {
         setClearErrors(true);
       }
     }, 10000);
-  }, [loginState?.errors, forgotPasswordState.status]);
+  }, [loginState?.errors, forgotPasswordState.status, forgotPasswordState.timestamp]);
 
   useEffect(() => {
     if (loginState.status == "success") router.push("/explore");
@@ -84,6 +84,9 @@ export default function LoginPage() {
                   )}
                 </AlertDescription>
               </Alert>
+            )}
+            {forgotPasswordState.status == "error" && !clearErrors && (
+              <FormErrorDisplay message="An error occurred during login. Please try again." />
             )}
             <div className="space-y-4 rounded-md">
               <div>
