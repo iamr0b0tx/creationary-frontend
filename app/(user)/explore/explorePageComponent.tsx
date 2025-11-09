@@ -122,7 +122,7 @@ export default function ExplorePageComponent({ initialContent, pagination }: TEx
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={content.creator.avatar || "/placeholder.svg"} />
+                      <AvatarImage src={content.creator.avatar} />
                       <AvatarFallback>
                         {content.creator.name
                           .split(" ")
