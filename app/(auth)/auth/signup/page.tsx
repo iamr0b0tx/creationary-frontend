@@ -140,7 +140,7 @@ export default function SignUpPage() {
           </CardHeader>
 
           <CardContent>
-            {displayErrors && actionState?.status == "error" && actionState?.message && (
+            {displayErrors && actionState?.status === "error" && actionState?.message && (
               <div className="bg-destructive/10 border-destructive/20 mb-4 rounded-md border p-3">
                 <p className="text-destructive text-sm">{actionState?.message}</p>
               </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor, cleanup, mockPagination, mockRouterInstance, mockPathnameValue, mockSearchParamsValue } from "../test-utils";
-import {  mockFetchResponse, resetAllMocks } from "../test-utils";
+import { render, screen, fireEvent, waitFor, cleanup } from "../test-utils";
+import { mockPagination, mockRouterInstance, mockPathnameValue, mockSearchParamsValue } from "../test-utils";import {  mockFetchResponse, resetAllMocks } from "../test-utils";
 import ExplorePageComponent from "@/app/(user)/explore/explorePageComponent";
 import { TCategory } from "@/lib/types/types";
 
