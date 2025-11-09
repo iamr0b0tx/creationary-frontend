@@ -86,7 +86,12 @@ export default function LoginPage() {
               </Alert>
             )}
             {forgotPasswordState.status == "error" && !clearErrors && (
-              <FormErrorDisplay message="An error occurred during login. Please try again." />
+              <FormErrorDisplay
+                message={
+                  forgotPasswordState.message ||
+                  "An error occurred while processing your request. Please try again."
+                }
+              />
             )}
             <div className="space-y-4 rounded-md">
               <div>

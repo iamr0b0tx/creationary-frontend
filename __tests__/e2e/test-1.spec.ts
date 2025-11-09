@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
+const email = process.env.EMAIL ?? "henryabayomi12@gmail.com";
+const password = process.env.PASSWORD ?? "Test@1234567890";
 
 test.describe("Creationary E2E Tests", () => {
   // test.slow();
   test.describe("Homepage and Navigation", () => {
     test("should display homepage elements correctly", async ({ page }) => {
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await expect(page.locator("h1")).toContainText("Monetize Your Creative Content");
       await expect(page.getByRole("link", { name: "Start Creating" })).toBeVisible();
       await expect(page.getByRole("link", { name: "Browse Content" })).toBeVisible();
@@ -39,7 +41,7 @@ test.describe("Creationary E2E Tests", () => {
     });
 
     test("should display navigation elements correctly", async ({ page }) => {
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await expect(
         page
           .getByRole("banner")
@@ -56,7 +58,7 @@ test.describe("Creationary E2E Tests", () => {
 
   test.describe("Authentication Flow", () => {
     test("should navigate to login page and display login elements", async ({ page }) => {
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
       await expect(page.getByRole("heading", { name: "Sign in to your account" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Forgot Password?" })).toBeVisible();
@@ -67,10 +69,10 @@ test.describe("Creationary E2E Tests", () => {
     });
 
     test("should login successfully with valid credentials", async ({ page }) => {
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
       await expect(page.getByText("Discover amazing content from talented creators")).toBeVisible();
     });
@@ -79,38 +81,33 @@ test.describe("Creationary E2E Tests", () => {
   test.describe("Explore Page Functionality", () => {
     test("should navigate content and use search functionality", async ({ page }) => {
       // Login first
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
 
       await page.waitForURL("**/explore");
 
-      // Content navigation
-      await page.locator("div").nth(5).click(); // this is a little cryptic, we have to improve it later
-      await page.locator("div").filter({ hasText: "ACAnonymous Creator0(0)new" }).nth(2).click(); // this will definitely cause issues when i updated to the lates backend update.
-      await page.locator("div").filter({ hasText: "ACAnonymous Creator0(0)new" }).nth(2).click();
-      await page.getByRole("button", { name: "Back" }).click();
       await expect(
         page.getByRole("textbox", { name: "Search content or creators..." })
       ).toBeVisible();
 
       // Search functionality
-      await page.goto("http://localhost:5173/explore?page=1");
+      await page.goto("/explore?page=1");
       await page.getByRole("textbox", { name: "Search content or creators..." }).fill("random");
     });
 
     test("should filter content by category and use pagination", async ({ page }) => {
       // Login first
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
 
       // Navigate to explore page
-      await page.goto("http://localhost:5173/explore");
+      await page.goto("/explore");
       await expect(page.getByRole("navigation", { name: "pagination" })).toBeVisible();
 
       // Category filtering
@@ -125,7 +122,7 @@ test.describe("Creationary E2E Tests", () => {
   test.describe("Content Upload Flow", () => {
     test("should navigate to upload page and display content types", async ({ page }) => {
       // Login first
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
       await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
       await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
@@ -133,9 +130,10 @@ test.describe("Creationary E2E Tests", () => {
 
       // Navigate to upload
       await page.getByRole("link", { name: "Upload Post" }).click();
-      await expect(
-        page.locator("div").filter({ hasText: "eBook/GuideWritten content" }).nth(4)
-      ).toBeVisible(); //hmmmm this part is not so clear yet.
+
+      // Verify eBook/Guide content type is visible - using semantic selector
+      await expect(page.getByRole("heading", { name: "eBook/Guide" })).toBeVisible();
+      await expect(page.getByText("Written content")).toBeVisible();
       await expect(page.locator("form")).toMatchAriaSnapshot(`
         - heading "Video Course" [level=3]
         - paragraph: Upload video lessons
@@ -164,10 +162,10 @@ test.describe("Creationary E2E Tests", () => {
 
     test("should complete content details step", async ({ page }) => {
       // Login and navigate to upload
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
       await page.getByRole("link", { name: "Upload Post" }).click();
 
@@ -208,10 +206,10 @@ test.describe("Creationary E2E Tests", () => {
 
     test("should verify content details form elements", async ({ page }) => {
       // Login and navigate to content details step
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
       await page.getByRole("link", { name: "Upload Post" }).click();
       await page.getByRole("heading", { name: "eBook/Guide" }).click();
@@ -254,10 +252,10 @@ test.describe("Creationary E2E Tests", () => {
 
     test("should complete pricing and settings step", async ({ page }) => {
       // Complete previous steps
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
       await page.getByRole("link", { name: "Upload Post" }).click();
       await page.getByRole("heading", { name: "eBook/Guide" }).click();
@@ -293,10 +291,10 @@ test.describe("Creationary E2E Tests", () => {
 
     test("should complete review and publish step", async ({ page }) => {
       // Complete all previous steps
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
       await page.getByRole("link", { name: "Upload Post" }).click();
       await page.getByRole("heading", { name: "eBook/Guide" }).click();
@@ -330,10 +328,10 @@ test.describe("Creationary E2E Tests", () => {
   test.describe("User Session Management", () => {
     test("should logout successfully", async ({ page }) => {
       // Login first
-      await page.goto("http://localhost:5173/");
+      await page.goto("/");
       await page.getByRole("link", { name: "Sign In" }).click();
-      await page.getByRole("textbox", { name: "Email address" }).fill("henryabayomi12@gmail.com");
-      await page.getByRole("textbox", { name: "Password" }).fill("Test@1234567890");
+      await page.getByRole("textbox", { name: "Email address" }).fill(email);
+      await page.getByRole("textbox", { name: "Password" }).fill(password);
       await page.getByRole("button", { name: "Sign in" }).click();
 
       // Logout

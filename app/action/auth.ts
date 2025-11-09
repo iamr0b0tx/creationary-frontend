@@ -66,7 +66,7 @@ export async function handleEmailLogin(
     logger.error("Error during login:", error);
     return {
       status: "error",
-      message: "message" in (error as Error) ? (error as Error).message : "Unable to Log In",
+      message: error instanceof Error ? error.message : "Unable to Log In",
     };
   }
 }
@@ -143,7 +143,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
     return {
       status: "error",
       message:
-        "message" in (error as Error) ? (error as Error).message : "Network error during signup",
+        error instanceof Error ? error.message : "Network error during signup",
       timestamp: Date.now(), // Force React to see this as a new error
     };
   }
@@ -258,7 +258,7 @@ export async function handleForgotPassword(
     logger.error("Network error during forgot password request:", error);
     return {
       status: "error",
-      message: "message" in (error as Error) ? (error as Error).message : "Network error occurred",
+      message: error instanceof Error ? error.message : "Network error occurred",
     };
   }
 }
