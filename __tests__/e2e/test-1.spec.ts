@@ -1,6 +1,7 @@
+import "../../envConfig"
 import { test, expect } from "@playwright/test";
-const email = "henryabayomi12@gmail.com";
-const password = "Test@1234567890";
+const email = process.env.TEST_EMAIL || "@gmail.com";
+const password = process.env.TEST_PASSWORD || "" ;
 
 test.describe("Creationary E2E Tests", () => {
   // test.slow();

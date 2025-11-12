@@ -562,7 +562,7 @@ export default function UploadContentPage() {
       </form>
       <Modal
         isOpen={isSuccessModalOpen}
-        hasCloseBtn={true}
+        hasCloseBtn={false}
         onClose={() => setIsSuccessModalOpen(false)}
       >
         <UploadSuccess />
