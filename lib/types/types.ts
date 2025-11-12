@@ -4,6 +4,8 @@ export type ResetPasswordActionState = {
 
 export type ForgotPasswordActionState = {
   status: "no_action" | "pending" | "success" | "error" | "invalid_email";
+  message?: string;
+  timestamp?: number;
 };
 export type LoginActionState = {
   errors?: string | Record<string, { errors: string[] }>;

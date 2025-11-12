@@ -66,7 +66,7 @@ export async function handleEmailLogin(
     logger.error("Error during login:", error);
     return {
       status: "error",
-      message: "message" in (error as Error) ? (error as Error).message : "Unable to Log In",
+      message: error instanceof Error ? error.message : "Unable to Log In",
     };
   }
 }
@@ -143,7 +143,7 @@ export async function handleRegister(prev: unknown, formData: FormData) {
     return {
       status: "error",
       message:
-        "message" in (error as Error) ? (error as Error).message : "Network error during signup",
+        error instanceof Error ? error.message : "Network error during signup",
       timestamp: Date.now(), // Force React to see this as a new error
     };
   }
@@ -229,14 +229,36 @@ export async function handleForgotPassword(
     });
 
     if (!res.ok) {
-      throw new Error("Forgot password request failed");
+      // Read the error response body for better debugging
+      let errorBody;
+      try {
+        errorBody = await res.json();
+      } catch {
+        errorBody = { message: `HTTP ${res.status}: ${res.statusText}` };
+      }
+
+      logger.error("Forgot password request failed:", {
+        status: res.status,
+        statusText: res.statusText,
+        message: errorBody.message,
+        url: res.url,
+      });
+
+      return {
+        status: "error",
+        timestamp: Date.now(), // Force React to see this as a new error
+        message: errorBody.message || "Forgot password request failed",
+      };
     }
 
     await res.json();
 
     return { status: "success" };
-  } catch (error) {
-    logger.error("Error during forgot password request:", error);
-    return { status: "error" };
+  } catch (error: unknown) {
+    logger.error("Network error during forgot password request:", error);
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Network error occurred",
+    };
   }
 }

@@ -69,7 +69,7 @@ export default function HomePageComponent({
                 >
                   <CardHeader className="text-center">
                     <Avatar className="mx-auto mb-4 h-16 w-16">
-                      <AvatarImage src={creator.avatar || "/placeholder.svg"} alt={creator.name} />
+                      <AvatarImage src={creator.avatar} alt={creator.name} />
                       <AvatarFallback>
                         {creator.name
                           .split(" ")
