@@ -3,6 +3,8 @@ import ExplorePageComponent from "./explorePageComponent";
 import { cookies } from "next/headers";
 import { transformContent } from "@/lib/utils";
 
+export const dynamic = "force-dynamic"; // Disable ISR for dynamic content
+
 export default async function ExplorePage(props: {
   searchParams?: Promise<{
     query?: string;
