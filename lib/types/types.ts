@@ -33,7 +33,13 @@ export type TContentItem = {
   _id: string; // corresponds to MongoDB _id
   title: string;
   content: string;
-  author: string; // ObjectId reference to User
+  // author: string; // ObjectId reference to User
+  author: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    _id: string;
+  };
   creator: {
     name: string;
     username: string;
@@ -57,6 +63,8 @@ export type TContentItem = {
 };
 
 export type TUser = {
+  _id: string;
+  posts: TContentItem[];
   email: string;
   lastName: string;
   firstName: string;

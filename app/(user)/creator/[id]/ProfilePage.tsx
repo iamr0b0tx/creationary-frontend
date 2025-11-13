@@ -21,26 +21,54 @@ import {
   createLucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { getCreatorData } from "@/lib/data/creator";
 import Image from "next/image";
 import { logger } from "@/lib/clientLogger";
+import { TUser } from "@/lib/types/types";
+import { offsetCurrentDate } from "@/lib/utils";
 
 const XIcon = createLucideIcon("X", [
   [
     "path",
     {
+      key: 'x-icon',
       d: "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z",
       stroke: "none",
       fill: "currentColor",
     },
   ],
 ]);
-export default function UserProfileContent({ id }: { id: number }) {
+export default function UserProfileContent({ userData: realCreator }: { userData: TUser }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("content");
   const [isFollowing, setIsFollowing] = useState(false);
 
-  const creator = getCreatorData(id);
+  const transformedCreator = (creator: TUser) => {
+    return {
+      ...creator,
+      verified: true, // Placeholder: Replace with actual verification status from API
+      name: `${creator.firstName} ${creator.lastName}`,
+      category: "Fitness", // Placeholder: Replace with actual category from API
+      location: "Lagos, Nigeria", // Placeholder: Replace with actual location from API
+      bio: `Hi, I'm ${creator.firstName}, a passionate fitness coach dedicated to helping you achieve your health and wellness goals. With years of experience in personal training and nutrition, I create customized workout plans and provide expert guidance to empower you on your fitness journey. Let's work together to transform your lifestyle and unlock your full potential!`,
+      socialLinks: {
+        website: "https://creator-website.com",
+        instagram: "@creator_insta",
+        twitter: "@creator_twitter",
+      },
+      avatar: "/default_avatar.png", // Placeholder: Replace with actual avatar URL from API
+      content: creator.posts,
+      joinedDate: offsetCurrentDate(5), // Placeholder: Replace with actual joined date from API
+      followers: 0, // Placeholder: Replace with actual followers count from API
+      stats: {
+        totalContent: creator.posts.length,
+        avgRating: 0, // Placeholder: Replace with actual average rating from API
+        totalViews: 0, // Placeholder: Replace with actual total views from API
+        totalReviews: 0, // Placeholder: Replace with actual total reviews from API
+      },
+    };
+  };
+  const creator = transformedCreator(realCreator);
+  // const creator = getCreatorData(id);
 
   if (!creator) {
     return (
@@ -92,12 +120,14 @@ export default function UserProfileContent({ id }: { id: number }) {
           <div className="flex-1">
             <div className="mb-4 flex flex-col items-start gap-4 md:flex-row md:items-end">
               <Avatar className="border-background h-32 w-32 border-4 shadow-xl">
-                <AvatarImage src={creator.avatar} alt={creator.name} />
+                <AvatarImage src={creator.avatar} alt={creator.firstName} />
                 <AvatarFallback className="text-2xl">
-                  {creator.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {creator.firstName +
+                    " " +
+                    creator.lastName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
                 </AvatarFallback>
               </Avatar>
 
@@ -222,8 +252,8 @@ export default function UserProfileContent({ id }: { id: number }) {
               className="w-full"
               onClick={async () => {
                 const shareData = {
-                  title: `${creator.name} - Creationary`,
-                  text: `Check out ${creator.name}'s profile on Creationary!`,
+                  title: `${creator.firstName} - Creationary`,
+                  text: `Check out ${creator.firstName} ${creator.lastName}'s profile on Creationary!`,
                   url: window.location.href,
                 };
 
@@ -259,7 +289,7 @@ export default function UserProfileContent({ id }: { id: number }) {
 
           <TabsContent value="content">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {creator.content.map((item) => (
+              {creator.posts.map((item) => (
                 <Card key={item._id} className="group transition-all duration-300 hover:shadow-lg">
                   {/* Note that this is remove because we do no support images currently. */}
                   {/* <div className="relative aspect-video overflow-hidden rounded-t-lg">
@@ -348,7 +378,7 @@ export default function UserProfileContent({ id }: { id: number }) {
             <Card>
               <CardHeader>
                 <CardTitle className="h-8 w-fit bg-[url('/yellow-brushstroke.webp')] bg-[length:110%_110%] bg-no-repeat py-1 text-xl">
-                  About {creator.name}
+                  About {creator.firstName} {creator.lastName}
                 </CardTitle>
               </CardHeader>
               <CardContent>

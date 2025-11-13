@@ -25,13 +25,20 @@ export function objectToFormData(obj: Record<string, unknown>) {
 }
 
 export const transformContent = (items: TContentItem[]) => {
-  return items.map((item, index) => ({
+  return items.map((item) => ({
     ...item,
     creator: {
-      name: "Anonymous Creator",
-      username: "user-" + (item._id?.slice(-6) || index),
+      name: item.author.firstName + " " + item.author.lastName || "Anonymous User",
+      username: item.author._id,
       avatar: "/default-avatar.png",
       verified: false,
     },
   }));
 };
+
+// This is just to model the user data as I am not given the joined Date.
+export function offsetCurrentDate(n: number): Date {
+  const currentDate = new Date(); // Get the current date and time
+  currentDate.setDate(currentDate.getDate() + n); // Add or subtract n days
+  return currentDate;
+}

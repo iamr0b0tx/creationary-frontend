@@ -1,3 +1,6 @@
+import { baseUrl } from "../baseUrl";
+import { logger } from "../clientLogger";
+
 const creators = [
   {
     _id: 1,
@@ -182,4 +185,22 @@ const creators = [
 
 export const getCreatorData = (id: number) => {
   return creators.find((creator) => creator._id === id) || null;
+};
+
+export const getCreator = async (id: string) => {
+  try {
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+      next: { revalidate: 24 * 60 * 60 }, // revalidate once every 24 hours
+    });
+    if (!response.ok) {
+      const { message } = await response.json();
+      logger.error("Failed to fetch creator:", message);
+      throw new Error(message || "Failed to fetch creator");
+    }
+    const { data } = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    logger.error("Failed to fetch creator:", error);
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
+  }
 };
