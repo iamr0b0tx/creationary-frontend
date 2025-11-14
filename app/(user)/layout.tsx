@@ -29,6 +29,11 @@ export default async function RootLayout({
   const userCookie = (await cookies()).get("user")?.value;
   const user = userCookie ? JSON.parse(userCookie) : null;
 
+  const fancyStyle =
+    "background: linear-gradient(to right, #4e54c8, #8f94fb); color: white; padding: 5px 10px; border-radius: 5px; font-size: 1.5em;";
+
+  console.log("%c🚀 Welcome to Creationary!! 🚀", fancyStyle);
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
