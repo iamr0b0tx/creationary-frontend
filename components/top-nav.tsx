@@ -35,7 +35,7 @@ const TopNav = ({ user }: { user: TUser | null }) => {
           {/* <Link href="/pricing" className="top-link">
             Pricing
           </Link> */}
-          <Link href="/about" className="top-link">
+          <Link onClick={(e) => e.preventDefault()} href="/about" className="top-link">
             About
           </Link>
         </nav>
@@ -52,13 +52,17 @@ const TopNav = ({ user }: { user: TUser | null }) => {
         ) : (
           <div className="flex gap-4">
             <Button className="opacity-90" asChild>
-              <Link href="/creator/upload">
-                {isMobile ? <Upload /> : "Upload Post"}
-              </Link>
+              <Link href="/creator/upload">{isMobile ? <Upload /> : "Upload Post"}</Link>
             </Button>
 
             <Button className="bg-red-500" onClick={logoutAction}>
-              {isPending ? <Loader2 className="animate-spin" /> : isMobile ? <PowerIcon /> : "Log Out"}
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : isMobile ? (
+                <PowerIcon />
+              ) : (
+                "Log Out"
+              )}
             </Button>
           </div>
         )}

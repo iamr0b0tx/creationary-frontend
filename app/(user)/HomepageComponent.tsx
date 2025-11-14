@@ -7,16 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Play } from "lucide-react";
 import Link from "next/link";
-import { featuredCreators } from "@/lib/data/homepageDummy";
 import { useRouter } from "next/navigation";
-import { TContentItem } from "@/lib/types/types";
+import { TContentItem, TUser } from "@/lib/types/types";
+import { transformedCreator } from "@/lib/utils";
 
 export default function HomePageComponent({
   featuredContent,
+  featuredCreators,
 }: {
   featuredContent: TContentItem[];
+  featuredCreators: TUser[];
 }) {
-  const [_hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [_hoveredCard, setHoveredCard] = useState<string | null>(null);
   const router = useRouter();
 
   return (
@@ -59,45 +61,38 @@ export default function HomePageComponent({
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {featuredCreators.map((creator, index) => (
-              <Link key={creator._id} href={`/user/${creator.username}`}>
-                <Card
-                  className="cursor-pointer transition-all duration-300 hover:shadow-lg"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  onMouseEnter={() => setHoveredCard(creator._id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <CardHeader className="text-center">
-                    <Avatar className="mx-auto mb-4 h-16 w-16">
-                      <AvatarImage src={creator.avatar} alt={creator.name} />
-                      <AvatarFallback>
-                        {creator.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <CardTitle className="text-lg">{creator.name}</CardTitle>
-                    <CardDescription>{creator.category}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4 text-sm">{creator.description}</p>
-                    <div className="flex justify-between text-sm">
-                      <div>
-                        <p className="font-semibold">{creator.subscribers.toLocaleString()}</p>
-                        <p className="text-muted-foreground">Subscribers</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-green-600">
-                          ${creator.monthlyEarnings.toLocaleString()}
-                        </p>
-                        <p className="text-muted-foreground">Monthly</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {featuredCreators.map((creator, index) => {
+              const altered_creator = transformedCreator(creator);
+              return (
+                <Link key={altered_creator._id} href={`/creator/${altered_creator._id}`}>
+                  <Card
+                    className="cursor-pointer transition-all duration-300 hover:shadow-lg"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    onMouseEnter={() => setHoveredCard(altered_creator._id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <CardHeader className="text-center">
+                      <Avatar className="mx-auto mb-4 h-16 w-16">
+                        <AvatarImage src={altered_creator.avatar} alt={altered_creator.name} />
+                        <AvatarFallback>
+                          {altered_creator.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <CardTitle className="text-lg">{altered_creator.name}</CardTitle>
+                      <CardDescription>{altered_creator.category}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground mb-4 text-center text-sm text-wrap">
+                        {altered_creator.bio.split(" ").slice(0, 15).join(" ") + "..."}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -177,61 +172,52 @@ export default function HomePageComponent({
             <div>
               <h4 className="mb-4 font-semibold">For Creators</h4>
               <ul className="text-muted-foreground space-y-2">
-                <li>
-                  <Link href="/creator/dashboard" className="footer-link">
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/creator/analytics" className="footer-link">
-                    Analytics
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/creator/payouts" className="footer-link">
-                    Payouts
-                  </Link>
-                </li>
+                {links.creators.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      aria-disabled={true}
+                      onClick={(e) => e.preventDefault()}
+                      href={`/creator/${link.toLowerCase()}`}
+                      className="footer-link"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
               <h4 className="mb-4 font-semibold">For Members</h4>
               <ul className="text-muted-foreground space-y-2">
-                <li>
-                  <Link href="/explore" className="footer-link">
-                    Explore
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/subscriptions" className="footer-link">
-                    Subscriptions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/library" className="footer-link">
-                    Library
-                  </Link>
-                </li>
+                {links.members.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      aria-disabled={true}
+                      onClick={(e) => e.preventDefault()}
+                      href={`/members/${link.toLowerCase()}`}
+                      className="footer-link"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
               <h4 className="mb-4 font-semibold">Support</h4>
               <ul className="text-muted-foreground space-y-2">
-                <li>
-                  <Link href="/help" className="support-link">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="support-link">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="support-link">
-                    Terms
-                  </Link>
-                </li>
+                {links.support.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      aria-disabled={true}
+                      onClick={(e) => e.preventDefault()}
+                      href={`/support/${link.toLowerCase()}`}
+                      className="footer-link"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -243,3 +229,9 @@ export default function HomePageComponent({
     </div>
   );
 }
+
+const links = {
+  creators: ["Dashboard", "Analytics", "Payouts"],
+  members: ["Explore", "Subscriptions", "Library"],
+  support: ["Help", "Contact", "Terms"],
+};
