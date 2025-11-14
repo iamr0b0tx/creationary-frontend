@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "../test-utils";
-import { mockPagination, mockRouterInstance, mockPathnameValue, mockSearchParamsValue } from "../test-utils";import {  mockFetchResponse, resetAllMocks } from "../test-utils";
+import {
+  mockPagination,
+  mockRouterInstance,
+  mockPathnameValue,
+  mockSearchParamsValue,
+} from "../test-utils";
+import { mockFetchResponse, resetAllMocks } from "../test-utils";
 import ExplorePageComponent from "@/app/(user)/explore/explorePageComponent";
 import { TCategory } from "@/lib/types/types";
 
@@ -32,7 +38,13 @@ export const mockContent = [
       avatar: "/avatar.jpg",
       verified: true,
     },
-    author: "13234353",
+    author: {
+      _id: "wt5235atandomcatatfa",
+      firstName: "John",
+      lastName: "johnphoto",
+      email: "john@yahoo.com",
+      verified: true,
+    },
     content:
       "This is valid content that is definitely long enough to pass the minimum requirements",
     isFree: false,
@@ -59,7 +71,13 @@ export const mockContent = [
       avatar: "/avatar2.jpg",
       verified: false,
     },
-    author: "13234353",
+    author: {
+      _id: "wt5235atandomcatatfa",
+      firstName: "John",
+      lastName: "johnphoto",
+      email: "john@yahoo.com",
+      verified: true,
+    },
     content:
       "This is valid content that is definitely long enough to pass the minimum requirements",
     isFree: false,
@@ -73,8 +91,6 @@ export const mockContent = [
     updatedAt: "2023-01-01T00:00:00Z",
   },
 ];
-
-
 
 afterEach(() => {
   cleanup();
