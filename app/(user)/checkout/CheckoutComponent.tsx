@@ -12,9 +12,10 @@ import { ArrowLeft, Shield, Star, CheckCircle, Gift, ArrowUp, Loader2 } from "lu
 import { posthog } from "posthog-js";
 import { toast } from "sonner";
 import Modal from "@/components/modal";
-import { TComment, TContentItem, TPriceCardProps } from "@/lib/types/types";
+import { TComment, TContentItem, TPriceCardProps, TUser } from "@/lib/types/types";
 import { addComment } from "../../action/post";
 import { logger } from "@/lib/clientLogger";
+import { formatDate } from "@/lib/utils";
 
 export type ReferenceObj = {
   message: string;
@@ -49,7 +50,14 @@ export default function CheckoutComponent({
 
   const addCommentAction = () => {
     startTransition(async () => {
-      await addComment(product?._id ?? "", commentText);
+      const response = await addComment(product?._id ?? "", commentText);
+      if (response.status === "error") {
+        if (response.message?.includes("expired token")) {
+          toast.error("Session expired. Please log in again.");
+        } else {
+          toast.error(response.message || "Failed to add comment.");
+        }
+      }
       setCommentText("");
       router.refresh();
     });
@@ -262,8 +270,9 @@ export default function CheckoutComponent({
                 comments.list.map((comment, index) => (
                   <Comment
                     key={index}
-                    authorName={"Anonymous User"}
-                    authorUrl={"/placeholder.png"}
+                    author={comment.author}
+                    authorUrl={"/"}
+                    createdAt={comment.createdAt}
                     text={comment.content}
                   />
                 ))
@@ -450,30 +459,35 @@ export default function CheckoutComponent({
 
 const Comment = ({
   authorUrl,
-  authorName,
+  author,
+  createdAt,
   text,
 }: {
   authorUrl: string;
-  authorName: string;
+  author: TUser;
   text: string;
-}) => (
-  <article className="grid grid-cols-[35px_1fr] gap-x-4">
-    <Avatar className="col-start-1 col-end-1 h-[35px] w-full">
-      <AvatarImage src={authorUrl} />
-      <AvatarFallback className="text-xs">
-        {authorName
-          .split(" ")
-          .map((n: string) => n[0])
-          .join("")}
-      </AvatarFallback>
-    </Avatar>
-    <div className="col-start-2 col-end-6 flex items-center text-sm font-medium">
-      <strong>Jenny Wen</strong>
-      <span className="pl-2 text-gray-400">6 hours ago</span>
-    </div>
-    <div className="col-start-2 col-end-6">{text}</div>
-  </article>
-);
+  createdAt: string;
+}) => {
+  const fullName = author.firstName + " " + author.lastName;
+  return (
+    <article className="grid grid-cols-[35px_1fr] gap-x-4">
+      <Avatar className="col-start-1 col-end-1 h-[35px] w-full">
+        <AvatarImage src={authorUrl} />
+        <AvatarFallback className="text-xs">
+          {fullName
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")}
+        </AvatarFallback>
+      </Avatar>
+      <div className="col-start-2 col-end-6 flex items-center text-sm font-medium">
+        <strong>{fullName}</strong>
+        <span className="pl-2 text-gray-400">{formatDate(createdAt)}</span>
+      </div>
+      <div className="col-start-2 col-end-6">{text}</div>
+    </article>
+  );
+};
 const PriceCard = ({
   price,
   duration,

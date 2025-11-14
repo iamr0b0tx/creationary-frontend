@@ -204,3 +204,22 @@ export const getCreator = async (id: string) => {
     return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 };
+
+export const getCreators = async () => {
+  try {
+    const response = await fetch(`${baseUrl}/users`, {
+      next: { revalidate: 24 * 60 * 60 }, // revalidate once every 24 hours
+    });
+    if (!response.ok) {
+      const { message } = await response.json();
+      logger.error("Failed to fetch creators:", message);
+      throw new Error(message || "Failed to fetch creators");
+    }
+    const { data } = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    logger.error("Failed to fetch creators:", error);
+    throw error;
+    // return { success: false, error: error instanceof Error ? error.message : String(error) };
+  }
+};

@@ -42,33 +42,63 @@ const mockFeaturedContent = [
       "Access to a private community",
     ],
     content: "this is the content",
-    author: "13234353",
+    author: {
+      _id: 'wt5235atandomcatatfa',
+      firstName: "John",
+      lastName: "johnphoto",
+      email: "john@yahoo.com",
+      verified: true,
+    },
     createdAt: "2023-01-01T00:00:00Z",
     updatedAt: "2023-01-01T00:00:00Z",
   },
 ];
 
+export const mockFeaturedCreators = [
+  {
+    _id: "5sres5wre5",
+    posts: [],
+    email: "sara-chen@gmail.com",
+    firstName: "Sarah",
+    lastName: "Chen",
+  },
+  {
+    _id: "4453adfat5wer",
+    posts: [],
+    email: "marcus-rashford@gmail.com",
+    firstName: "Marcus",
+    lastName: "Rashford",
+  },
+  {
+    _id: "afsdfatetewt",
+    posts: [],
+    email: "elena@gmail.com",
+    lastName: "Rodrizguez",
+    firstName: "Elena",
+  },
+];
+
 describe("Home Page", () => {
   test("renders the main heading with brand name", () => {
-    render(<Page featuredContent={mockFeaturedContent} />);
+    render(<Page featuredContent={mockFeaturedContent} featuredCreators={mockFeaturedCreators} />);
     expect(screen.getAllByText("Creationary")).toBeDefined();
   });
 
   test("renders the hero heading", () => {
-    render(<Page featuredContent={mockFeaturedContent} />);
+    render(<Page featuredContent={mockFeaturedContent} featuredCreators={mockFeaturedCreators} />);
     expect(screen.getByRole("heading", { level: 1 })).toBeDefined();
     expect(screen.getByText(/Monetize Your/i)).toBeDefined();
     expect(screen.getByText(/Creative Content/i)).toBeDefined();
   });
 
   test("renders call-to-action buttons", () => {
-    render(<Page featuredContent={mockFeaturedContent} />);
+    render(<Page featuredContent={mockFeaturedContent} featuredCreators={mockFeaturedCreators} />);
     expect(screen.getByText("Start Creating")).toBeDefined();
     expect(screen.getByText("Browse Content")).toBeDefined();
   });
 
   test("renders Featured Creators section", () => {
-    render(<Page featuredContent={mockFeaturedContent} />);
+    render(<Page featuredContent={mockFeaturedContent} featuredCreators={mockFeaturedCreators} />);
     expect(screen.getByText("Featured Creators")).toBeDefined();
   });
 

@@ -33,7 +33,6 @@ export type TContentItem = {
   _id: string; // corresponds to MongoDB _id
   title: string;
   content: string;
-  // author: string; // ObjectId reference to User
   author: {
     firstName: string;
     lastName: string;
@@ -105,9 +104,9 @@ export type TComment = {
 
 type TList = {
   post: string;
-  author: string; // mongoose.Types.ObjectId | IUser;
+  author: TUser;
   content: string;
   likes?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
